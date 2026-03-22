@@ -1,0 +1,847 @@
+/*
+ * Edward de Jong — Personal Website
+ * Style: Restrained, typographic, minimal
+ * ----------------------------------------
+ * Table of contents:
+ *   1. Reset & base
+ *   2. Variables
+ *   3. Navigation
+ *   4. Sections & layout
+ *   5. Intro
+ *   6. EN/NL toggle
+ *   7. Work / project list
+ *   8. Still preview (hover)
+ *   9. About
+ *  10. Contact
+ *  11. Page load animation
+ *  12. Work page (project detail)
+ *  13. Lightbox
+ *  14. Responsive
+ */
+
+/* ── 1. Reset & base ───────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { font-family: var(--font); }
+
+/* ── 2. Variables ─────────────────────────────────────── */
+
+:root {
+  --bg:        #fafaf8;
+  --text:      #111110;
+  --muted:     #93938c;
+  --subtle:    #c4c4bc;
+  --border:    #deded7;
+  --ph-bg:     #e4e4dc;
+  --ph-text:   #9a9a92;
+
+  --font: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+  --max-w:   1080px;
+  --pad:     2.5rem;
+  --nav-h:   3.75rem;
+}
+
+/* ── 3. Navigation ────────────────────────────────────── */
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  height: var(--nav-h);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+.nav-name:hover { opacity: 0.6; }
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── 4. Sections & layout ─────────────────────────────── */
+
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+section {
+  padding: 7rem 0;
+  border-top: 1px solid var(--border);
+}
+
+#intro { border-top: none; padding-top: 8rem; padding-bottom: 8rem; }
+
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3rem;
+}
+
+/* ── 5. Intro ─────────────────────────────────────────── */
+
+.intro-title {
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.intro-sub {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-bottom: 2.75rem;
+}
+
+/* ── 6. EN/NL toggle ──────────────────────────────────── */
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  background: var(--ph-bg);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 1.25rem;
+  gap: 0;
+}
+
+.lang-pill {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  height: calc(100% - 6px);
+  background: var(--text);
+  border-radius: 999px;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.lang-btn {
+  position: relative;
+  z-index: 1;
+  background: none;
+  border: none;
+  padding: 0.28rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  color: var(--muted);
+  border-radius: 999px;
+  transition: color 0.28s;
+  line-height: 1;
+}
+.lang-btn.active { color: var(--bg); }
+
+/* ── Bio ──────────────────────────────────────────────── */
+
+.bio-wrap {
+  max-width: 560px;
+}
+
+.bio-text {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.78;
+  color: var(--text);
+  transition: opacity 0.3s ease;
+}
+
+/* ── 7. Work / project list ───────────────────────────── */
+
+.filter-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.pill {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.pill:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.pill.active {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+/* ── Project list ─────────────────────────────────────── */
+
+.project-list {
+  border-top: 0.5px solid var(--border);
+}
+
+.project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.05rem 0;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+  transition: opacity 0.25s ease;
+  user-select: none;
+}
+
+.project-row.fading-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.project-row.hidden {
+  display: none;
+}
+
+.project-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Small thumbnail: only shows on touch/mobile */
+.project-thumb {
+  display: none;
+  width: 46px;
+  height: 30px;
+  flex-shrink: 0;
+  background: var(--ph-bg);
+  border-radius: 2px;
+}
+
+.project-title {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 0.22s ease;
+}
+
+.project-row:hover .project-title {
+  transform: translateX(7px);
+}
+
+.project-year {
+  font-size: 0.78rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-left: 1.5rem;
+}
+
+/* ── 8. Still preview (hover) ─────────────────────────── */
+
+.still-preview {
+  position: fixed;
+  width: 290px;
+  aspect-ratio: 16 / 10;
+  pointer-events: none;
+  z-index: 300;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.still-preview.visible {
+  opacity: 1;
+}
+
+.still-ph {
+  width: 100%;
+  height: 100%;
+  background: var(--ph-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--ph-text);
+  text-transform: uppercase;
+  font-family: var(--font);
+}
+
+/* ── 9. About ─────────────────────────────────────────── */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.portrait-ph {
+  aspect-ratio: 3 / 4;
+  background: var(--ph-bg);
+  border-radius: 2px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0.85rem;
+}
+
+.portrait-ph span {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ph-text);
+}
+
+.about-bio {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 3rem;
+}
+
+/* ── CV tabs ──────────────────────────────────────────── */
+
+.cv-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  gap: 0;
+}
+
+.cv-tab {
+  background: none;
+  border: none;
+  padding: 0.55rem 0;
+  margin-right: 2rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 1.5px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.cv-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.cv-panel {
+  display: none;
+}
+.cv-panel.active {
+  display: block;
+}
+
+.cv-item {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.cv-year {
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 3.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cv-title {
+  flex: 1;
+}
+
+.cv-role {
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ── 10. Contact ──────────────────────────────────────── */
+
+#contact {
+  padding-bottom: 10rem;
+}
+
+.contact-email {
+  font-size: clamp(1.4rem, 3.5vw, 2.25rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.contact-email a {
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.15s;
+  padding-bottom: 1px;
+}
+.contact-email a:hover {
+  border-color: var(--text);
+}
+
+.contact-phone {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+}
+
+.contact-note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 400px;
+  line-height: 1.65;
+}
+
+/* ── 11. Page load animation ──────────────────────────── */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-animate] {
+  opacity: 0;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+[data-animate="1"] { animation-delay: 0.05s; }
+[data-animate="2"] { animation-delay: 0.18s; }
+[data-animate="3"] { animation-delay: 0.3s; }
+[data-animate="4"] { animation-delay: 0.42s; }
+
+/* ── 12. Work page ────────────────────────────────────── */
+
+.work-page {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  padding-top: calc(var(--nav-h) + 3.5rem);
+  padding-bottom: 8rem;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.work-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  transition: color 0.15s;
+  margin-bottom: 3.5rem;
+}
+.work-back:hover { color: var(--text); }
+.work-back-arrow {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.work-title {
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin-bottom: 1.25rem;
+}
+
+.work-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+}
+
+.work-meta-sep {
+  color: var(--subtle);
+}
+
+/* Key still */
+.work-key-still {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--ph-bg);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ph-text);
+}
+
+/* Logline + synopsis */
+.work-logline {
+  font-size: 1.15rem;
+  font-weight: 300;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--text);
+  max-width: 640px;
+  margin-bottom: 1.5rem;
+}
+
+.work-synopsis {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  max-width: 640px;
+  margin-bottom: 4rem;
+}
+
+/* Trailer embed */
+.work-section-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.work-trailer {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--ph-bg);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ph-text);
+  margin-bottom: 4rem;
+  overflow: hidden;
+}
+
+.work-trailer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Stills gallery */
+.work-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 4rem;
+}
+
+.work-still-item {
+  aspect-ratio: 16 / 9;
+  background: var(--ph-bg);
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ph-text);
+  transition: opacity 0.15s;
+  overflow: hidden;
+}
+.work-still-item:hover { opacity: 0.75; }
+
+.work-still-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Festivals */
+.work-festivals {
+  margin-bottom: 4rem;
+}
+
+.festival-list {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+/* Credits */
+.work-credits {
+  margin-bottom: 4rem;
+}
+
+.credit-row {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.55rem 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.credit-role {
+  color: var(--muted);
+  flex: 0 0 160px;
+  font-size: 0.8rem;
+}
+
+.credit-name {
+  color: var(--text);
+  flex: 1;
+}
+
+/* Watch link */
+.work-watch {
+  display: inline-block;
+  border: 1px solid var(--text);
+  padding: 0.65rem 1.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  border-radius: 2px;
+  transition: background 0.15s, color 0.15s;
+}
+.work-watch:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* ── 13. Lightbox ─────────────────────────────────────── */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 16, 0.92);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+.lightbox-img {
+  max-width: 88vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.lightbox-ph {
+  width: 80vw;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  background: var(--ph-bg);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ph-text);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.75rem;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.lightbox-close:hover { color: rgba(255,255,255,0.9); }
+
+/* ── 14. Responsive ───────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  :root {
+    --pad: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --pad: 1.25rem;
+  }
+
+  section {
+    padding: 4.5rem 0;
+  }
+
+  #intro {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+
+  /* Nav */
+  .nav-links {
+    gap: 1.25rem;
+  }
+  .nav-links a {
+    font-size: 0.75rem;
+  }
+
+  /* Filter pills: horizontal scroll */
+  .filter-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: calc(-1 * var(--pad));
+    margin-right: calc(-1 * var(--pad));
+    padding-left: var(--pad);
+    padding-right: var(--pad);
+  }
+  .filter-pills::-webkit-scrollbar { display: none; }
+
+  /* Show thumbnails, disable hover preview */
+  .project-thumb { display: block; }
+  .still-preview { display: none !important; }
+
+  /* No title shift on mobile (touch) */
+  .project-row:hover .project-title {
+    transform: none;
+  }
+
+  /* About: stack vertically */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .portrait-ph {
+    aspect-ratio: 4 / 3;
+    max-width: 260px;
+  }
+
+  /* Work page gallery: 2 columns */
+  .work-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Credits: stack role/name */
+  .credit-role {
+    flex: 0 0 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-title {
+    font-size: 2rem;
+  }
+
+  .contact-email {
+    font-size: 1.25rem;
+  }
+
+  .work-title {
+    font-size: 1.75rem;
+  }
+
+  .work-gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .credit-row {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .credit-role {
+    flex: none;
+  }
+}

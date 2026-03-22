@@ -1,404 +1,216 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edward de Jong — Writer-Director</title>
-  <style>
-    /* ── Tokens ── */
-    :root {
-      --bg:        #f9f8f6;
-      --surface:   #ffffff;
-      --border:    #e4e0d8;
-      --text:      #1a1916;
-      --muted:     #7a756c;
-      --accent:    #2a2520;
-      --toggle-bg: #e4e0d8;
-      --shadow:    rgba(0,0,0,0.06);
-    }
-    [data-theme="dark"] {
-      --bg:        #111010;
-      --surface:   #1c1b19;
-      --border:    #2e2c28;
-      --text:      #f0ede8;
-      --muted:     #8a8479;
-      --accent:    #d4c9bb;
-      --toggle-bg: #2e2c28;
-      --shadow:    rgba(0,0,0,0.3);
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edward de Jong — Writer &amp; Director</title>
+  <meta name="description" content="Edward de Jong is a Dutch writer and director based in Amsterdam, known for socially realistic films with a comic edge.">
 
-    /* ── Reset ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Georgia', 'Times New Roman', serif;
-      line-height: 1.7;
-      transition: background 0.3s, color 0.3s;
-      min-height: 100vh;
-    }
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Edward de Jong — Writer &amp; Director">
+  <meta property="og:description" content="Dutch writer and director based in Amsterdam.">
+  <meta property="og:image"       content="[OG image URL — add later]">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://edwarddejong.nl">
 
-    /* ── Layout ── */
-    .page {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem 5rem;
-    }
+  <!-- Fonts: DM Sans (300, 400, 500) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 
-    /* ── Header bar ── */
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 3.5rem;
-    }
-
-    /* ── Toggle ── */
-    .toggle {
-      background: var(--toggle-bg);
-      border: none;
-      border-radius: 999px;
-      padding: 0.35rem 0.75rem;
-      cursor: pointer;
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: background 0.3s, color 0.3s;
-    }
-    .toggle:hover { color: var(--text); }
-    .toggle .icon { font-size: 0.95rem; }
-    .toggle .label { font-family: system-ui, sans-serif; }
-
-    /* ── Profile row ── */
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    /* ── Avatar ── */
-    .avatar-wrap {
-      flex-shrink: 0;
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--border);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    /* Placeholder silhouette shown when no image */
-    .avatar svg {
-      width: 46px;
-      height: 46px;
-      fill: var(--muted);
-      opacity: 0.5;
-    }
-
-    /* ── Name & title ── */
-    .identity h1 {
-      font-size: 1.55rem;
-      font-weight: normal;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-      color: var(--text);
-    }
-    .identity .role {
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 0.82rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 0.25rem;
-    }
-
-    /* ── Divider ── */
-    hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 2rem 0;
-    }
-
-    /* ── Lang toggle ── */
-    .lang-bar {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-    .lang-switch {
-      display: flex;
-      background: var(--toggle-bg);
-      border-radius: 999px;
-      padding: 3px;
-      gap: 2px;
-      transition: background 0.3s;
-    }
-    .lang-switch button {
-      border: none;
-      background: transparent;
-      border-radius: 999px;
-      padding: 0.25rem 0.85rem;
-      font-family: system-ui, sans-serif;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      color: var(--muted);
-      transition: background 0.2s, color 0.2s;
-    }
-    .lang-switch button.active {
-      background: var(--surface);
-      color: var(--text);
-      box-shadow: 0 1px 3px var(--shadow);
-    }
-
-    /* ── Bio ── */
-    .bio {
-      font-size: 1.05rem;
-      color: var(--text);
-      margin-bottom: 2.5rem;
-    }
-    .bio p + p { margin-top: 1rem; }
-    .bio-lang { display: none; }
-    .bio-lang.active { display: block; }
-
-    /* ── Still ── */
-    .still-section {}
-    .still-label {
-      font-family: system-ui, sans-serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.65rem;
-    }
-    .still {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .still img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    /* Placeholder when no still image */
-    .still-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6rem;
-      color: var(--muted);
-      font-family: system-ui, sans-serif;
-      font-size: 0.8rem;
-    }
-    .still-placeholder svg {
-      width: 36px;
-      height: 36px;
-      fill: var(--muted);
-      opacity: 0.35;
-    }
-    .still-placeholder span { opacity: 0.5; letter-spacing: 0.06em; }
-
-    /* Caption */
-    .still-caption {
-      margin-top: 0.55rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    /* ── Footer ── */
-    footer {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-family: system-ui, sans-serif;
-      font-size: 0.78rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<div class="page">
+<body id="top">
 
-  <!-- Top bar with toggle -->
-  <div class="topbar">
-    <button class="toggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">
-      <span class="icon" id="toggle-icon">☀️</span>
-      <span class="label" id="toggle-label">Light</span>
-    </button>
-  </div>
+  <!-- ── Navigation ─────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#top" class="nav-name">Edward de Jong</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
 
-  <!-- Profile -->
-  <div class="profile">
-    <div class="avatar-wrap">
-      <div class="avatar">
-        <!--
-          Replace the SVG below with an <img> tag to use a real photo:
-          <img src="avatar.jpg" alt="Your Name" />
-        -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-        </svg>
+  <!-- ── Intro ──────────────────────────────────────────── -->
+  <section id="intro">
+    <div class="container">
+      <h1 class="intro-title" data-animate="1">Writer &amp; director</h1>
+      <p class="intro-sub" data-animate="2">Based in Amsterdam</p>
+
+      <div data-animate="3">
+        <!-- Language toggle -->
+        <div class="lang-toggle" id="langToggle" role="group" aria-label="Language">
+          <div class="lang-pill" id="langPill" aria-hidden="true"></div>
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn"        data-lang="nl">NL</button>
+        </div>
+
+        <!-- Bio — crossfades between languages -->
+        <div class="bio-wrap">
+          <p class="bio-text" id="bio-en">
+            Edward de Jong (Amsterdam, 1994) is a writer and director whose films are grounded in everyday life and shaped by a passion for working with actors. His work is socially realistic with a comic edge — observational in style, unconventional in structure. He studied Fiction Directing at the Nederlandse Filmacademie and graduated in 2023.
+          </p>
+          <p class="bio-text" id="bio-nl" hidden>
+            De films van Edward de Jong (Amsterdam, 1994) tonen zijn toewijding aan het authentiek weergeven van het alledaagse leven, evenals zijn passie voor werken met acteurs. Zijn films zijn sociaal realistisch met een komische inslag, hebben een observerende stijl en een onconventionele verhaalstructuur. Hij studeerde Regie Fictie aan de Nederlandse Filmacademie en studeerde af in 2023.
+          </p>
+        </div>
       </div>
     </div>
-    <div class="identity">
-      <h1>Edward de Jong</h1>
-      <div class="role">Writer-Director</div>
-    </div>
-  </div>
+  </section>
 
-  <hr />
+  <!-- ── Work ───────────────────────────────────────────── -->
+  <section id="work">
+    <div class="container">
+      <p class="section-label" data-animate="1">Selected work</p>
 
-  <!-- Language toggle -->
-  <div class="lang-bar">
-    <div class="lang-switch">
-      <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
-      <button id="lang-nl" onclick="setLang('nl')">NL</button>
-    </div>
-  </div>
+      <!-- Filter pills -->
+      <div class="filter-pills" id="filterPills" role="group" aria-label="Filter by category">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="fiction">Fiction</button>
+        <button class="pill" data-filter="commercial">Commercial</button>
+        <button class="pill" data-filter="music-video">Music video</button>
+        <button class="pill" data-filter="other">Other</button>
+      </div>
 
-  <!-- Bio -->
-  <div class="bio">
-    <div class="bio-lang active" id="bio-en">
-      <p>
-        Edward de Jong's (Amsterdam, 1994) films reflect his commitment to
-        authentically portraying everyday life and his passion for working with
-        actors. His work is socially realistic with a comedic edge, characterised
-        by an observational style and unconventional narrative structures. During
-        his four-year Fiction Directing studies at the Netherlands Film Academy he
-        developed his signature both inside and outside the academy through short
-        films, web series, commercials and music videos.
-      </p>
-      <p>
-        In his first year he wrote and directed the pilot episode of the NTR web
-        series <em>Awkward Turtle</em> (2020) for 3LAB. His third-year film
-        <em>Per Persoon</em> (2022), a hang-out/screwball comedy about class
-        difference, was selected for the Go Short International Film Festival and
-        ShortCutz Amsterdam in 2023. His graduation film <em>Niks Gebeurd</em>
-        (2023), about the impact of sexual abuse within a family, premiered at the
-        Keep an Eye Film Academy Festival.
-      </p>
-      <p>
-        Alongside his work at the film academy he made the short slice-of-life
-        film <em>Suni</em> (2022) about street harassment. <em>Suni</em> had its
-        premiere at the Netherlands Film Festival and became one of the first short
-        films in Dutch film history to receive a theatrical release.
-      </p>
+      <!-- Project rows rendered by main.js -->
+      <div class="project-list" id="projectList" role="list"></div>
     </div>
-    <div class="bio-lang" id="bio-nl">
-      <p>
-        De films van Edward de Jong (Amsterdam, 1994) tonen zijn toewijding aan
-        het authentiek weergeven van het alledaagse leven, evenals zijn passie
-        voor werken met acteurs. Zijn films zijn sociaal realistisch met een
-        komische inslag, hebben een observerende stijl en een onconventionele
-        verhaalstructuur. Gedurende zijn vierjarige studie Regie Fictie aan de
-        Nederlandse Filmacademie heeft hij zowel binnen als buiten de academie
-        zijn signatuur ontwikkeld door middel van korte films, webseries,
-        commercials en muziekvideo's.
-      </p>
-      <p>
-        In zijn eerste jaar schreef en regisseerde hij voor de NTR de
-        pilotaflevering van de 3LAB webserie <em>Awkward Turtle</em> (2020). Zijn
-        derdejaars film <em>Per Persoon</em> (2022), een hang-out/screwball comedy
-        film over klassenverschil, werd geselecteerd voor het Go Short
-        International Film Festival en ShortCutz Amsterdam in 2023. Zijn
-        afstudeerfilm <em>Niks Gebeurd</em> (2023), over de impact van seksueel
-        misbruik binnen een gezin, ging in première op het Keep an Eye Filmacademie
-        Festival.
-      </p>
-      <p>
-        Naast zijn werk op de filmacademie maakte hij ook nog de korte
-        slice-of-life film <em>Suni</em> (2022) over straatintimidatie.
-        <em>Suni</em> beleefde haar première op het Nederlands Film Festival en
-        werd een van de eerste korte films in de Nederlandse filmgeschiedenis met
-        een bioscooprelease.
-      </p>
-    </div>
-  </div>
+  </section>
 
-  <!-- Still -->
-  <div class="still-section">
-    <div class="still-label">Still</div>
-    <div class="still">
-      <!--
-        Replace the placeholder below with an <img> to use a real still:
-        <img src="still.jpg" alt="Film still — [title], [year]" />
-      -->
-      <div class="still-placeholder">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm1 15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9.5 3-3-4-2.5 3.3-1.5-2-3 4h10z"/>
-        </svg>
-        <span>Add a film still</span>
+  <!-- ── About ──────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <p class="section-label">About</p>
+
+      <div class="about-grid">
+        <!-- Portrait -->
+        <div class="portrait-ph" aria-label="Portrait photo placeholder">
+          <span>[Portrait photo]</span>
+        </div>
+
+        <!-- Bio + CV -->
+        <div class="about-right">
+          <div class="about-bio">
+            <p>Edward de Jong (Amsterdam, 1994) studied Fiction Directing at the Nederlandse Filmacademie, graduating in 2023. His films are socially realistic with a comic edge — observational in style, unconventional in structure — and are always driven by a passion for working closely with actors.</p>
+            <br>
+            <p>His short film <em>Suni</em> (2022) premiered at the Nederlands Film Festival and became one of the first short films in Dutch film history to receive a theatrical release. His graduation film <em>Niks Gebeurd</em> (2023), about the impact of sexual abuse within a family, premiered at the Keep an Eye Filmacademie Festival. His third-year film <em>Per Persoon</em> (2022), a hang-out/screwball comedy about class difference, was selected for Go Short and ShortCutz Amsterdam.</p>
+            <br>
+            <p>In his first year at the Filmacademie he wrote and directed the pilot episode of the NTR / 3LAB web series <em>Awkward Turtle</em> (2020).</p>
+          </div>
+
+          <!-- CV tabs -->
+          <div class="cv-tabs" role="tablist">
+            <button class="cv-tab active" data-tab="directing"  role="tab" aria-selected="true">Directing</button>
+            <button class="cv-tab"        data-tab="writing"    role="tab" aria-selected="false">Writing</button>
+            <button class="cv-tab"        data-tab="other-work" role="tab" aria-selected="false">Other</button>
+          </div>
+
+          <!-- Directing panel -->
+          <div class="cv-panel active" id="panel-directing" role="tabpanel">
+            <div class="cv-item">
+              <span class="cv-year">2024</span>
+              <span class="cv-title">De Sketches van Myrte Siebinga</span>
+              <span class="cv-role">Short</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2023</span>
+              <span class="cv-title">Niks Gebeurd</span>
+              <span class="cv-role">Short film</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2023</span>
+              <span class="cv-title">Turks Fruit — Parodie</span>
+              <span class="cv-role">Short</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2023</span>
+              <span class="cv-title">Dat Kan!</span>
+              <span class="cv-role">Commercial</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2022</span>
+              <span class="cv-title">Suni</span>
+              <span class="cv-role">Short film</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2022</span>
+              <span class="cv-title">Per Persoon</span>
+              <span class="cv-role">Short film</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2022</span>
+              <span class="cv-title">Onweer</span>
+              <span class="cv-role">Music video</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2020</span>
+              <span class="cv-title">Ik Haat Poëzie</span>
+              <span class="cv-role">Short</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2020</span>
+              <span class="cv-title">Sabotage</span>
+              <span class="cv-role">Music video</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2020</span>
+              <span class="cv-title">Awkward Turtle</span>
+              <span class="cv-role">Web series</span>
+            </div>
+          </div>
+
+          <!-- Writing panel -->
+          <div class="cv-panel" id="panel-writing" role="tabpanel">
+            <div class="cv-item">
+              <span class="cv-year">2023</span>
+              <span class="cv-title">Niks Gebeurd</span>
+              <span class="cv-role">Short film</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2022</span>
+              <span class="cv-title">Per Persoon</span>
+              <span class="cv-role">Short film</span>
+            </div>
+            <div class="cv-item">
+              <span class="cv-year">2020</span>
+              <span class="cv-title">Awkward Turtle</span>
+              <span class="cv-role">Web series</span>
+            </div>
+          </div>
+
+          <!-- Other work panel -->
+          <div class="cv-panel" id="panel-other-work" role="tabpanel">
+            <div class="cv-item">
+              <span class="cv-year">2018–22</span>
+              <span class="cv-title">Various PA and AD work</span>
+              <span class="cv-role"></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="still-caption">
-      <!-- e.g. "Scene from <em>Film Title</em>, 2024" -->
+  </section>
+
+  <!-- ── Contact ────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label">Contact</p>
+      <p class="contact-email">
+        <a href="mailto:info@edwarddejong.nl">info@edwarddejong.nl</a>
+      </p>
+      <p class="contact-phone">+31 6 53987661</p>
+      <p class="contact-note">Open to festival inquiries, script commissions, and commercial collaborations.</p>
     </div>
+  </section>
+
+  <!-- Still preview — desktop hover reveal -->
+  <div class="still-preview" id="stillPreview" aria-hidden="true">
+    <div class="still-ph" id="stillLabel"></div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    &copy; <span id="year"></span> Edward de Jong
-  </footer>
-
-</div>
-
-<script>
-  // Set current year
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  // Language toggle
-  function setLang(lang) {
-    document.getElementById('bio-en').classList.toggle('active', lang === 'en');
-    document.getElementById('bio-nl').classList.toggle('active', lang === 'nl');
-    document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-    document.getElementById('lang-nl').classList.toggle('active', lang === 'nl');
-    document.documentElement.lang = lang === 'nl' ? 'nl' : 'en';
-  }
-
-  // Theme toggle
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('toggle-icon').textContent = isDark ? '☀️' : '🌙';
-    document.getElementById('toggle-label').textContent = isDark ? 'Light' : 'Dark';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-  }
-
-  // Persist preference
-  (function() {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
-    if (theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.getElementById('toggle-icon').textContent = '🌙';
-      document.getElementById('toggle-label').textContent = 'Dark';
-    }
-  })();
-</script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
