@@ -639,6 +639,21 @@ section {
   object-fit: cover;
 }
 
+/* Figure wrapper for CMS gallery items (holds still + optional caption) */
+.work-still-figure {
+  display: flex;
+  flex-direction: column;
+}
+
+.work-still-caption {
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
 /* Festivals */
 .work-festivals {
   margin-bottom: 4rem;
@@ -728,6 +743,18 @@ section {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ph-text);
+}
+
+/* Caption inside lightbox */
+.lightbox-caption {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin-top: 0.85rem;
+  pointer-events: none;
+  max-width: 560px;
+  line-height: 1.5;
 }
 
 .lightbox-close {

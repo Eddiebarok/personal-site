@@ -1,0 +1,123 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Decap CMS — config.yml
+# Site: edwarddejong.nl
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# AUTHENTICATION SETUP (one-time, ~5 minutes)
+# ─────────────────────────────────────────────
+# OPTION A — Netlify (recommended, free):
+#   1. Go to app.netlify.com → Add new site → Import from GitHub
+#      Connect repo: Eddiebarok/personal-site
+#      Build command: (leave empty)  |  Publish directory: .
+#   2. Site configuration → Identity → Enable Identity
+#   3. Identity → Services → Enable Git Gateway
+#   4. Identity → Invite users → invite your own email address
+#   5. Accept the invite email and set a password
+#   6. Visit /admin on your Netlify URL (or edwarddejong.nl/admin if you
+#      point your custom domain to Netlify instead of GitHub Pages)
+#   → The backend block below is already configured for Option A.
+#
+# OPTION B — Stay on GitHub Pages (needs a small OAuth proxy):
+#   1. Create a GitHub OAuth App at: github.com/settings/developers
+#      Homepage URL: https://edwarddejong.nl
+#      Authorization callback URL: YOUR_PROXY_URL/callback
+#   2. Deploy a free proxy (e.g. github.com/vencax/netlify-cms-github-oauth-provider)
+#      to Render.com (free tier) — takes ~10 min
+#   3. Comment out the Option A backend block below and uncomment Option B.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── OPTION A backend (Netlify git-gateway) ───────────────────────────────────
+backend:
+  name: git-gateway
+  branch: main
+
+# ── OPTION B backend (GitHub Pages + OAuth proxy) — uncomment to use ─────────
+# backend:
+#   name: github
+#   repo: Eddiebarok/personal-site
+#   branch: main
+#   auth_type: pkce
+#   app_id: YOUR_GITHUB_OAUTH_APP_CLIENT_ID
+#   base_url: https://YOUR-PROXY-URL.onrender.com
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+site_url: https://edwarddejong.nl
+display_url: https://edwarddejong.nl
+logo_url: https://edwarddejong.nl/images/uploads/logo.png
+
+# Where uploaded images are stored in the repo
+media_folder: images/uploads
+
+# How image paths appear in the generated markdown (root-relative)
+public_folder: /images/uploads
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Collections
+# ─────────────────────────────────────────────────────────────────────────────
+
+collections:
+
+  # ── Work / Projects ──────────────────────────────────────────────────────
+  #
+  # Each project in data.js has a matching .md file here at content/work/[slug].md
+  # The CMS manages: thumbnail, description, and gallery (images + order).
+  # Everything else (title, year, festivals, credits) stays in data.js.
+  #
+  # To add a new project later:
+  #   1. Add the project object to js/data.js
+  #   2. Create a new entry here in the CMS (set slug to match data.js exactly)
+  #
+  - name: work
+    label: Work
+    label_singular: Project
+    folder: content/work
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}}"
+
+    fields:
+
+      - label: Title
+        name: title
+        widget: string
+        hint: "Must match the title in js/data.js exactly."
+
+      - label: Slug
+        name: slug
+        widget: string
+        hint: >
+          Must match the slug in js/data.js exactly (e.g. niks-gebeurd).
+          This links the CMS entry to the correct project page.
+
+      - label: Thumbnail
+        name: thumbnail
+        widget: image
+        required: false
+        choose_url: false
+        hint: "Main image shown at the top of the project page (16:9 ratio recommended)."
+
+      - label: Description
+        name: description
+        widget: text
+        required: false
+        hint: "Shown as the project synopsis on the detail page. Plain text."
+
+      - label: Gallery
+        name: gallery
+        label_singular: Still
+        widget: list
+        required: false
+        hint: "Drag rows to reorder. The order here is the order on the site."
+        fields:
+          - label: Image
+            name: image
+            widget: image
+            choose_url: false
+          - label: Caption
+            name: caption
+            widget: string
+            required: false
+            hint: "Optional — shown below the still and in the lightbox."
