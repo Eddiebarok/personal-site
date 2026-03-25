@@ -43,9 +43,8 @@ backend:
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-site_url: https://edwarddejong.nl
-display_url: https://edwarddejong.nl
-logo_url: https://edwarddejong.nl/images/uploads/logo.png
+site_url: https://resilient-peony-5732d0.netlify.app
+display_url: https://resilient-peony-5732d0.netlify.app
 
 # Where uploaded images are stored in the repo
 media_folder: images/uploads
