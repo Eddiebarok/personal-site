@@ -1,7 +1,7 @@
 ---
 title: Niks Gebeurd
 slug: niks-gebeurd
-thumbnail: ''
-description: ''
+thumbnail: /images/uploads/offi-offi-poster.png
+description: ""
 gallery: []
 ---
