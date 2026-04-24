@@ -505,7 +505,18 @@ section {
 [data-animate="3"] { animation-delay: 0.3s; }
 [data-animate="4"] { animation-delay: 0.42s; }
 
+/* Nav: current-page link */
+.nav-current {
+  color: var(--text) !important;
+}
+
 /* ── 12. Work page ────────────────────────────────────── */
+
+/* About page — same outer spacing as work page */
+.about-page {
+  padding-top: calc(var(--nav-h) + 5rem);
+  padding-bottom: 8rem;
+}
 
 .work-page {
   max-width: var(--max-w);

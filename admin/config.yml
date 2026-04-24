@@ -83,7 +83,7 @@ collections:
         name: visible
         widget: boolean
         default: true
-        hint: "Toggle off to hide this project from the homepage work list."
+        hint: "Toggle off to hide this project everywhere — work list and About page CV."
 
       - label: Title
         name: title

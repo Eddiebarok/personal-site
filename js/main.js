@@ -278,19 +278,6 @@ async function loadHomepageContent() {
     return; // fail silently — hardcoded HTML is the fallback
   }
 
-  // ── Portrait ──────────────────────────────────────────────
-  if (data.portrait) {
-    const container = document.getElementById('portrait-container');
-    if (container) {
-      container.innerHTML = '';
-      container.className = 'portrait-live';
-      const img = document.createElement('img');
-      img.src = data.portrait;
-      img.alt = 'Portrait — Edward de Jong';
-      container.appendChild(img);
-    }
-  }
-
   // ── Intro bio (EN) ────────────────────────────────────────
   if (data.bio_en) {
     const el = document.getElementById('bio-en');
@@ -301,12 +288,6 @@ async function loadHomepageContent() {
   if (data.bio_nl) {
     const el = document.getElementById('bio-nl');
     if (el) el.textContent = data.bio_nl;
-  }
-
-  // ── About section bio ─────────────────────────────────────
-  if (data.about_bio) {
-    const el = document.getElementById('about-bio');
-    if (el) el.innerHTML = renderMarkdown(data.about_bio);
   }
 
   // ── Contact email ─────────────────────────────────────────
