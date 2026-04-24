@@ -120,3 +120,68 @@ collections:
             widget: string
             required: false
             hint: "Optional — shown below the still and in the lightbox."
+
+      - label: "Visible on homepage"
+        name: visible
+        widget: boolean
+        default: true
+        hint: "Toggle off to hide this project from the homepage work list."
+
+  # ── Site settings ─────────────────────────────────────────
+  #
+  # Controls the homepage: portrait photo, bio texts (EN + NL),
+  # the About section bio, and contact details.
+  # Changes here are committed to content/homepage.json.
+  #
+  - name: settings
+    label: "Site settings"
+    files:
+
+      - label: Homepage
+        name: homepage
+        file: content/homepage.json
+        format: json
+        fields:
+
+          - label: Portrait photo
+            name: portrait
+            widget: image
+            required: false
+            choose_url: false
+            hint: "Shown in the About section. Tall crop (3:4 ratio) recommended."
+
+          - label: Bio — English
+            name: bio_en
+            widget: text
+            required: false
+            hint: "Short intro paragraph shown on the homepage (English)."
+
+          - label: Bio — Dutch
+            name: bio_nl
+            widget: text
+            required: false
+            hint: "Short intro paragraph shown on the homepage (Dutch)."
+
+          - label: About text
+            name: about_bio
+            widget: markdown
+            required: false
+            hint: "Longer bio in the About section. Use *asterisks* for italic film titles."
+
+          - label: Contact email
+            name: contact_email
+            widget: string
+            required: false
+            hint: "Email address shown in the Contact section."
+
+          - label: Contact phone
+            name: contact_phone
+            widget: string
+            required: false
+            hint: "Phone number shown in the Contact section."
+
+          - label: Contact note
+            name: contact_note
+            widget: string
+            required: false
+            hint: "Short line below the phone number (e.g. what you're open to)."

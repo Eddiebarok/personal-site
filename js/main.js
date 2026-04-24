@@ -8,6 +8,8 @@
  *   - EN / NL bio language toggle
  *   - CV section tabs
  *   - Smooth scroll for nav links
+ *   - CMS homepage content (portrait, bio texts, about bio, contact)
+ *   - Per-project visibility (reads visible field from content/work/[slug].md)
  */
 
 'use strict';
@@ -247,13 +249,128 @@ function initSmoothScroll() {
   });
 }
 
+/* ── CMS homepage content ───────────────────────────────── */
+
+/**
+ * Minimal markdown renderer:
+ * - *text* → <em>text</em>
+ * - Double newlines → paragraph breaks
+ * Handles the About bio from the CMS markdown widget.
+ */
+function renderMarkdown(text) {
+  if (!text) return '';
+  const paragraphs = text.trim().split(/\n\n+/);
+  return paragraphs.map(p => {
+    const html = p
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+      .replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    return `<p>${html}</p>`;
+  }).join('\n');
+}
+
+async function loadHomepageContent() {
+  let data;
+  try {
+    const res = await fetch('/content/homepage.json');
+    if (!res.ok) return;
+    data = await res.json();
+  } catch {
+    return; // fail silently — hardcoded HTML is the fallback
+  }
+
+  // ── Portrait ──────────────────────────────────────────────
+  if (data.portrait) {
+    const container = document.getElementById('portrait-container');
+    if (container) {
+      container.innerHTML = '';
+      container.className = 'portrait-live';
+      const img = document.createElement('img');
+      img.src = data.portrait;
+      img.alt = 'Portrait — Edward de Jong';
+      container.appendChild(img);
+    }
+  }
+
+  // ── Intro bio (EN) ────────────────────────────────────────
+  if (data.bio_en) {
+    const el = document.getElementById('bio-en');
+    if (el) el.textContent = data.bio_en;
+  }
+
+  // ── Intro bio (NL) ────────────────────────────────────────
+  if (data.bio_nl) {
+    const el = document.getElementById('bio-nl');
+    if (el) el.textContent = data.bio_nl;
+  }
+
+  // ── About section bio ─────────────────────────────────────
+  if (data.about_bio) {
+    const el = document.getElementById('about-bio');
+    if (el) el.innerHTML = renderMarkdown(data.about_bio);
+  }
+
+  // ── Contact email ─────────────────────────────────────────
+  if (data.contact_email) {
+    const el = document.getElementById('contact-email');
+    if (el) {
+      el.innerHTML = `<a href="mailto:${data.contact_email}">${data.contact_email}</a>`;
+    }
+  }
+
+  // ── Contact phone ─────────────────────────────────────────
+  if (data.contact_phone) {
+    const el = document.getElementById('contact-phone');
+    if (el) el.textContent = data.contact_phone;
+  }
+
+  // ── Contact note ──────────────────────────────────────────
+  if (data.contact_note) {
+    const el = document.getElementById('contact-note');
+    if (el) el.textContent = data.contact_note;
+  }
+}
+
+/* ── Project visibility ─────────────────────────────────── */
+
+/**
+ * Fetches each project's markdown file in parallel and removes
+ * any row whose frontmatter contains `visible: false`.
+ * Missing files or parse errors default to visible.
+ */
+async function applyProjectVisibility() {
+  const rows = $$('.project-row');
+  if (!rows.length) return;
+
+  const texts = await Promise.all(
+    rows.map(row =>
+      fetch(`/content/work/${row.dataset.slug}.md`)
+        .then(r => r.ok ? r.text() : null)
+        .catch(() => null)
+    )
+  );
+
+  rows.forEach((row, i) => {
+    const text = texts[i];
+    if (!text) return; // file missing → visible by default
+    const match = text.match(/^visible:\s*(true|false)/m);
+    const visible = !match || match[1] !== 'false';
+    if (!visible) row.remove();
+  });
+}
+
 /* ── Init ───────────────────────────────────────────────── */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   buildProjectList();
   initFilter();
   initStillPreview();
   initLangToggle();
   initCvTabs();
   initSmoothScroll();
+
+  // Load CMS content and apply visibility — run in parallel
+  await Promise.all([
+    loadHomepageContent(),
+    applyProjectVisibility()
+  ]);
 });
