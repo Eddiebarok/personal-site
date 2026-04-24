@@ -1,8 +1,8 @@
 ---
+visible: false
 title: Onweer
 slug: onweer
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
