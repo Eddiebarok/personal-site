@@ -79,6 +79,12 @@ collections:
 
     fields:
 
+      - label: "Visible on homepage"
+        name: visible
+        widget: boolean
+        default: true
+        hint: "Toggle off to hide this project from the homepage work list."
+
       - label: Title
         name: title
         widget: string
@@ -120,12 +126,6 @@ collections:
             widget: string
             required: false
             hint: "Optional — shown below the still and in the lightbox."
-
-      - label: "Visible on homepage"
-        name: visible
-        widget: boolean
-        default: true
-        hint: "Toggle off to hide this project from the homepage work list."
 
   # ── Site settings ─────────────────────────────────────────
   #
