@@ -1,8 +1,8 @@
 ---
+visible: false
 title: Turks Fruit — Parodie
 slug: turks-fruit
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
