@@ -1,8 +1,8 @@
 ---
+visible: false
 title: Ik Haat Poëzie
 slug: ik-haat-poezie
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
