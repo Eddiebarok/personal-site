@@ -1,8 +1,8 @@
 ---
+visible: false
 title: De Sketches van Myrte Siebinga
 slug: myrte-siebinga
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
