@@ -1,8 +1,8 @@
 ---
+visible: false
 title: Sabotage
 slug: sabotage
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
