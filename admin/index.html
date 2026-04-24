@@ -4,7 +4,54 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Content Manager — Edward de Jong</title>
-  <!-- Decap CMS loads the entire admin UI via this one script -->
+
+  <!-- DM Sans — same as the main site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Admin skin ────────────────────────────────────────────
+     *
+     * Decap CMS uses styled-components with generated class names,
+     * so broad selectors + !important are the reliable lever here.
+     * We focus on: font, background, scrollbar, and text smoothing.
+     *
+     * ───────────────────────────────────────────────────────── */
+
+    /* 1 ── Font: DM Sans everywhere */
+    *, *::before, *::after {
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+    }
+
+    /* Exception: keep monospace for any code / markdown editor internals */
+    pre, code, kbd, samp,
+    [class*="CodeMirror"],
+    [class*="codemirror"] {
+      font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace !important;
+    }
+
+    /* 2 ── Background: warm off-white instead of stark grey */
+    html, body {
+      background: #f0f0ec !important;
+    }
+
+    /* 3 ── Scrollbar: thin and subtle (WebKit) */
+    ::-webkit-scrollbar            { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track      { background: transparent; }
+    ::-webkit-scrollbar-thumb      { background: #c4c4bc; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover{ background: #93938c; }
+
+    /* 4 ── Remove the harsh focus outline box-shadow that CMS adds
+            and replace with a softer ring so it's still accessible */
+    *:focus-visible {
+      outline: 2px solid #111110 !important;
+      outline-offset: 2px !important;
+      box-shadow: none !important;
+    }
+  </style>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
