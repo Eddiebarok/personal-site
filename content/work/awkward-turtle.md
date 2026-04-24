@@ -1,8 +1,8 @@
 ---
+visible: false
 title: Awkward Turtle
 slug: awkward-turtle
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: ""
+description: ""
 gallery: []
 ---
