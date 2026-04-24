@@ -1,8 +1,8 @@
 ---
+visible: true
 title: Suni
 slug: suni
-visible: true
-thumbnail: ''
-description: ''
+thumbnail: /images/uploads/suni_1.1.3.png
+description: ""
 gallery: []
 ---
