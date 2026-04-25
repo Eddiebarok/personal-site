@@ -249,6 +249,22 @@ function initSmoothScroll() {
   });
 }
 
+/* ── Fit title to container width ───────────────────────── */
+// Sets the hero name's font-size so it spans exactly the container width.
+// Runs after fonts load and on every resize. Mobile: let CSS handle it.
+
+function fitTitle() {
+  const el = document.querySelector('.intro-title');
+  if (!el) return;
+  if (window.innerWidth <= 768) {
+    el.style.fontSize = '';
+    return;
+  }
+  el.style.fontSize = '200px';
+  const scale = el.parentElement.clientWidth / el.scrollWidth;
+  el.style.fontSize = Math.floor(200 * scale * 0.99) + 'px';
+}
+
 /* ── CMS homepage content ───────────────────────────────── */
 
 /**
@@ -348,6 +364,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initLangToggle();
   initCvTabs();
   initSmoothScroll();
+  fitTitle();
+  document.fonts.ready.then(fitTitle); // re-run once web font is measured
+  window.addEventListener('resize', fitTitle);
 
   // Load CMS content and apply visibility — run in parallel
   await Promise.all([
