@@ -249,6 +249,83 @@ function initSmoothScroll() {
   });
 }
 
+/* ── Letter repel effect ─────────────────────────────────── */
+// Each letter in the hero name flees the cursor, then springs back.
+// Each letter has a fixed random angle offset so they scatter in
+// genuinely different directions even at the same distance.
+
+function initLetterRepel() {
+  const title = document.querySelector('.intro-title');
+  if (!title) return;
+
+  // Touch screens: skip
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const raw = title.textContent;
+
+  // Assign a fixed personality angle to every character position
+  const personalities = raw.split('').map(ch =>
+    ch === ' ' ? 0 : (Math.random() - 0.5) * Math.PI * 0.8
+  );
+
+  // Rewrite as spans — spaces stay as plain text nodes
+  title.innerHTML = raw.split('').map((ch, i) => {
+    if (ch === ' ') return ' ';
+    return `<span class="letter" data-a="${personalities[i].toFixed(4)}">${ch}</span>`;
+  }).join('');
+
+  const letters = title.querySelectorAll('.letter');
+  const RADIUS  = 130; // px — how far the cursor's "field" reaches
+  const POWER   = 55;  // px — max displacement at cursor centre
+
+  let rafPending = false;
+  let cx = -9999, cy = -9999;
+
+  function repel() {
+    letters.forEach(letter => {
+      const r  = letter.getBoundingClientRect();
+      const lx = r.left + r.width  * 0.5;
+      const ly = r.top  + r.height * 0.5;
+      const dx = lx - cx;
+      const dy = ly - cy;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist < RADIUS && dist > 0) {
+        // Force increases sharply as cursor gets close
+        const t  = 1 - dist / RADIUS;
+        const f  = t * t * POWER;
+        const angle = Math.atan2(dy, dx) + parseFloat(letter.dataset.a);
+        const tx = Math.cos(angle) * f;
+        const ty = Math.sin(angle) * f;
+        letter.style.transition = 'transform 0.08s linear';
+        letter.style.transform  = `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px)`;
+      } else {
+        // Spring back
+        letter.style.transition = 'transform 0.65s cubic-bezier(0.34,1.56,0.64,1)';
+        letter.style.transform  = '';
+      }
+    });
+    rafPending = false;
+  }
+
+  title.addEventListener('mousemove', e => {
+    cx = e.clientX;
+    cy = e.clientY;
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(repel);
+    }
+  });
+
+  title.addEventListener('mouseleave', () => {
+    cx = cy = -9999;
+    letters.forEach(l => {
+      l.style.transition = 'transform 0.65s cubic-bezier(0.34,1.56,0.64,1)';
+      l.style.transform  = '';
+    });
+  });
+}
+
 /* ── Fit title to container width ───────────────────────── */
 // Sets the hero name's font-size so it spans exactly the container width.
 // Runs after fonts load and on every resize. Mobile: let CSS handle it.
@@ -364,8 +441,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initLangToggle();
   initCvTabs();
   initSmoothScroll();
-  fitTitle();
-  document.fonts.ready.then(fitTitle); // re-run once web font is measured
+  initLetterRepel();          // wraps letters in spans first
+  fitTitle();                  // then measures & fits
+  document.fonts.ready.then(fitTitle);
   window.addEventListener('resize', fitTitle);
 
   // Load CMS content and apply visibility — run in parallel

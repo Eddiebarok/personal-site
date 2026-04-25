@@ -224,6 +224,12 @@ section {
 }
 .lang-btn.active { color: var(--bg); }
 
+/* Individual letters — needed for transform in the repel effect */
+.intro-title .letter {
+  display: inline-block;
+  will-change: transform;
+}
+
 /* ── Bio ──────────────────────────────────────────────── */
 
 .bio-wrap {
