@@ -947,21 +947,6 @@ section {
 
 /* ── 15. Effects (grain, cursor ring, page transitions) ─── */
 
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.45;
-  transition: opacity 0.2s;
-  will-change: transform;
-}
-
 .page-overlay {
   position: fixed;
   inset: 0;

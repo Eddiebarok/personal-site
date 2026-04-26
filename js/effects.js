@@ -15,7 +15,7 @@ function initFilmGrain() {
     height:        '100%',
     pointerEvents: 'none',
     zIndex:        '9000',
-    opacity:       '0.048',
+    opacity:       '0.11',
     mixBlendMode:  'overlay',
   });
   document.body.appendChild(canvas);
@@ -50,49 +50,16 @@ function initFilmGrain() {
   requestAnimationFrame(draw);
 }
 
-/* ── Cursor trailer ───────────────────────────────────────
- *
- * A small ring that springs toward the cursor with a slight lag.
- * Desktop / fine-pointer devices only.
- */
-function initCursorTrail() {
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-  const ring = document.createElement('div');
-  ring.className = 'cursor-ring';
-  document.body.appendChild(ring);
-
-  let tx = -60, ty = -60; // where the cursor actually is
-  let cx = tx,  cy = ty;  // where the ring is (lags behind)
-
-  document.addEventListener('mousemove', e => {
-    tx = e.clientX;
-    ty = e.clientY;
-  });
-
-  document.addEventListener('mouseleave', () => { ring.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { ring.style.opacity = ''; });
-
-  (function tick() {
-    cx += (tx - cx) * 0.13; // spring constant — higher = less lag
-    cy += (ty - cy) * 0.13;
-    ring.style.transform =
-      `translate(${(cx - 10).toFixed(1)}px,${(cy - 10).toFixed(1)}px)`;
-    requestAnimationFrame(tick);
-  })();
-}
-
 /* ── Page transitions ─────────────────────────────────────
  *
- * Every page fades in from black on load.
- * Clicking any internal link fades to black before navigating.
+ * The overlay div lives in the HTML so it covers the first paint.
+ * On load: fades out. On internal link click: fades back in, then navigates.
  */
 function initPageTransitions() {
-  const overlay = document.createElement('div');
-  overlay.className = 'page-overlay';
-  document.body.appendChild(overlay);
+  const overlay = document.getElementById('pageOverlay');
+  if (!overlay) return;
 
-  // Double rAF: ensures the browser has painted opacity:1 before we remove it
+  // Double rAF: ensures the browser has painted the overlay before we fade it
   requestAnimationFrame(() =>
     requestAnimationFrame(() => overlay.classList.add('faded'))
   );
@@ -112,6 +79,5 @@ function initPageTransitions() {
 /* ── Init ─────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initFilmGrain();
-  initCursorTrail();
   initPageTransitions();
 });
