@@ -102,10 +102,12 @@ function initCursorLight() {
   });
   document.body.appendChild(disc);
 
+  // All text-bearing elements — broad so nothing is missed
   const SELS = [
     '.intro-title .letter',
     '.nav-name',
     '.nav-links a',
+    '.intro-sub span',
     '.section-label',
     '.film-title',
     '.film-year',
@@ -113,9 +115,16 @@ function initCursorLight() {
     '.bio-text',
     '.contact-email a',
     '.contact-note',
+    '.work-title',
+    '.work-logline',
+    '.work-synopsis',
+    '.work-meta',
+    '.festival-list',
+    '.credit-role',
+    '.credit-name',
   ].join(', ');
 
-  const MAX_DIST = 420; // tighter radius — effect is focused around the cursor
+  const MAX_DIST = 420;
   let cx = -9999, cy = -9999;
   let pending = false;
 
@@ -125,22 +134,34 @@ function initCursorLight() {
       const r  = el.getBoundingClientRect();
       const ex = r.left + r.width  * 0.5;
       const ey = r.top  + r.height * 0.5;
-      const dx = ex - cx;           // vector from cursor to element
+      const dx = ex - cx;   // cursor → element vector
       const dy = ey - cy;
       const dist = Math.max(Math.hypot(dx, dy), 1);
 
       if (dist > MAX_DIST) { el.style.textShadow = ''; return; }
 
-      const t     = 1 - dist / MAX_DIST;      // 1 = cursor on element, 0 = at edge
-      const nx    = dx / dist;                 // unit direction: cursor → element
-      const ny    = dy / dist;
-      const off   = 3 + 14 * t;               // offset px — larger for crisper shadow
-      const blur  = 1 + 10 * (1 - t * 0.8);  // blur px — hard near cursor, soft far
-      const alpha = 0.18 + 0.78 * t;          // opacity — near 1.0 right under cursor
+      const t  = 1 - dist / MAX_DIST; // 1 = cursor on element, 0 = at edge
+      const nx = dx / dist;           // unit: cursor → element (shadow side)
+      const ny = dy / dist;
+
+      // Warm glow on the cursor-facing side — this is the visible effect on
+      // light text / dark background; amber light appears to illuminate that edge
+      const glowOff   = 1 + 5  * t;
+      const glowBlur  = 3 + 16 * t;
+      const glowAlpha = 0.65 * t;
+
+      // Dark drop shadow on the far side — adds depth, most visible on gradient text
+      const shadOff   = 3 + 14 * t;
+      const shadBlur  = 1 + 10 * (1 - t * 0.7);
+      const shadAlpha = 0.15 + 0.80 * t;
 
       el.style.textShadow =
-        `${(nx * off).toFixed(1)}px ${(ny * off).toFixed(1)}px ` +
-        `${blur.toFixed(1)}px rgba(0,0,0,${alpha.toFixed(2)})`;
+        // lit side: warm amber glow toward cursor
+        `${(-nx * glowOff).toFixed(1)}px ${(-ny * glowOff).toFixed(1)}px ` +
+        `${glowBlur.toFixed(1)}px rgba(255,195,70,${glowAlpha.toFixed(2)}), ` +
+        // shadow side: dark drop away from cursor
+        `${(nx * shadOff).toFixed(1)}px ${(ny * shadOff).toFixed(1)}px ` +
+        `${shadBlur.toFixed(1)}px rgba(0,0,0,${shadAlpha.toFixed(2)})`;
     });
   }
 
