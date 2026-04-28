@@ -32,14 +32,20 @@ function buildFilmStrip() {
 
   const map = Object.fromEntries(PROJECTS.map(p => [p.slug, p]));
 
-  function makeSection(labelText, items) {
+  function makeSection(label, items) {
     const sec = document.createElement('div');
     sec.className = 'work-subsection';
 
     const lbl = document.createElement('p');
     lbl.className = 'section-label';
     lbl.setAttribute('data-animate', '1');
-    lbl.textContent = labelText;
+    if (typeof label === 'object') {
+      lbl.setAttribute('data-en', label.en);
+      lbl.setAttribute('data-nl', label.nl);
+      lbl.textContent = label.nl; // NL is default
+    } else {
+      lbl.textContent = label;
+    }
     sec.appendChild(lbl);
 
     const strip = document.createElement('div');
@@ -67,16 +73,16 @@ function buildFilmStrip() {
   }
 
   // Los first — "currently in development"
-  wrap.appendChild(makeSection('Currently in development', [
-    { slug: 'los', upcoming: true },
-  ]));
+  wrap.appendChild(makeSection(
+    { en: 'Currently in development', nl: 'Momenteel in ontwikkeling' },
+    [{ slug: 'los', upcoming: true }]
+  ));
 
   // Released fiction films
-  wrap.appendChild(makeSection('Narrative fiction', [
-    { slug: 'niks-gebeurd' },
-    { slug: 'suni' },
-    { slug: 'per-persoon' },
-  ]));
+  wrap.appendChild(makeSection(
+    { en: 'Narrative fiction', nl: 'Narratieve fictie' },
+    [{ slug: 'niks-gebeurd' }, { slug: 'suni' }, { slug: 'per-persoon' }]
+  ));
 }
 
 

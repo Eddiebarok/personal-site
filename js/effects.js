@@ -76,8 +76,95 @@ function initPageTransitions() {
   });
 }
 
+/* ── Cursor as light source ───────────────────────────────
+ *
+ * Follows the cursor with a warm amber glow disc (mix-blend-mode: screen).
+ * On every frame, each text element gets a text-shadow whose direction and
+ * intensity depend on the cursor-to-element vector — nearer = darker & harder.
+ */
+function initCursorLight() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  // Warm glow disc
+  const disc = document.createElement('div');
+  Object.assign(disc.style, {
+    position:      'fixed',
+    width:         '520px',
+    height:        '520px',
+    borderRadius:  '50%',
+    background:    'radial-gradient(circle, rgba(200,130,20,0.14) 0%, rgba(160,90,12,0.06) 40%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex:        '8990',
+    transform:     'translate(-50%,-50%)',
+    mixBlendMode:  'screen',
+    opacity:       '0',
+    transition:    'opacity 0.4s ease',
+  });
+  document.body.appendChild(disc);
+
+  const SELS = [
+    '.intro-title .letter',
+    '.nav-name',
+    '.nav-links a',
+    '.section-label',
+    '.film-title',
+    '.film-year',
+    '.film-meta',
+    '.bio-text',
+    '.contact-email a',
+    '.contact-note',
+  ].join(', ');
+
+  const MAX_DIST = 600; // px — shadow fades to zero beyond this radius
+  let cx = -9999, cy = -9999;
+  let pending = false;
+
+  function castShadows() {
+    pending = false;
+    document.querySelectorAll(SELS).forEach(el => {
+      const r  = el.getBoundingClientRect();
+      const ex = r.left + r.width  * 0.5;
+      const ey = r.top  + r.height * 0.5;
+      const dx = ex - cx;           // vector from cursor to element
+      const dy = ey - cy;
+      const dist = Math.max(Math.hypot(dx, dy), 1);
+
+      if (dist > MAX_DIST) { el.style.textShadow = ''; return; }
+
+      const t     = 1 - dist / MAX_DIST;       // 1 = cursor on element, 0 = at edge
+      const nx    = dx / dist;                  // unit direction: cursor → element
+      const ny    = dy / dist;
+      const off   = 2 + 10 * t;                // shadow offset px
+      const blur  = 2 + 18 * (1 - t * 0.5);   // blur radius px
+      const alpha = 0.08 + 0.72 * t;           // shadow opacity
+
+      el.style.textShadow =
+        `${(nx * off).toFixed(1)}px ${(ny * off).toFixed(1)}px ` +
+        `${blur.toFixed(1)}px rgba(0,0,0,${alpha.toFixed(2)})`;
+    });
+  }
+
+  document.addEventListener('mousemove', e => {
+    cx = e.clientX;
+    cy = e.clientY;
+    disc.style.left = cx + 'px';
+    disc.style.top  = cy + 'px';
+    if (!pending) { pending = true; requestAnimationFrame(castShadows); }
+  });
+
+  document.addEventListener('mouseenter', () => {
+    disc.style.opacity = '1';
+  });
+
+  document.addEventListener('mouseleave', () => {
+    disc.style.opacity = '0';
+    document.querySelectorAll(SELS).forEach(el => { el.style.textShadow = ''; });
+  });
+}
+
 /* ── Init ─────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initFilmGrain();
   initPageTransitions();
+  initCursorLight();
 });

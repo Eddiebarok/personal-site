@@ -82,7 +82,8 @@ nav {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 2.5rem;
 }
 
 .nav-name {
@@ -114,9 +115,11 @@ nav {
 }
 
 .nav-links {
+  display: contents;
+}
+.nav-links li {
+  display: contents;
   list-style: none;
-  display: flex;
-  gap: 2rem;
 }
 
 .nav-links a {
@@ -945,8 +948,8 @@ section {
   }
 
   /* Nav */
-  .nav-links {
-    gap: 1.25rem;
+  .nav-inner {
+    gap: 1.5rem;
   }
   .nav-links a {
     font-size: 0.75rem;
