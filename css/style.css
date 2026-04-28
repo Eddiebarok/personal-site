@@ -285,6 +285,7 @@ section {
 .film-item {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.45rem;
   text-decoration: none;
   cursor: pointer;
