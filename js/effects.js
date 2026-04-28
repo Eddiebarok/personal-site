@@ -85,14 +85,14 @@ function initPageTransitions() {
 function initCursorLight() {
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  // Warm glow disc
+  // Warm glow disc — small and punchy
   const disc = document.createElement('div');
   Object.assign(disc.style, {
     position:      'fixed',
-    width:         '520px',
-    height:        '520px',
+    width:         '260px',
+    height:        '260px',
     borderRadius:  '50%',
-    background:    'radial-gradient(circle, rgba(200,130,20,0.14) 0%, rgba(160,90,12,0.06) 40%, transparent 70%)',
+    background:    'radial-gradient(circle, rgba(230,155,30,0.55) 0%, rgba(190,110,15,0.22) 38%, transparent 68%)',
     pointerEvents: 'none',
     zIndex:        '8990',
     transform:     'translate(-50%,-50%)',
@@ -115,7 +115,7 @@ function initCursorLight() {
     '.contact-note',
   ].join(', ');
 
-  const MAX_DIST = 600; // px — shadow fades to zero beyond this radius
+  const MAX_DIST = 420; // tighter radius — effect is focused around the cursor
   let cx = -9999, cy = -9999;
   let pending = false;
 
@@ -131,12 +131,12 @@ function initCursorLight() {
 
       if (dist > MAX_DIST) { el.style.textShadow = ''; return; }
 
-      const t     = 1 - dist / MAX_DIST;       // 1 = cursor on element, 0 = at edge
-      const nx    = dx / dist;                  // unit direction: cursor → element
+      const t     = 1 - dist / MAX_DIST;      // 1 = cursor on element, 0 = at edge
+      const nx    = dx / dist;                 // unit direction: cursor → element
       const ny    = dy / dist;
-      const off   = 2 + 10 * t;                // shadow offset px
-      const blur  = 2 + 18 * (1 - t * 0.5);   // blur radius px
-      const alpha = 0.08 + 0.72 * t;           // shadow opacity
+      const off   = 3 + 14 * t;               // offset px — larger for crisper shadow
+      const blur  = 1 + 10 * (1 - t * 0.8);  // blur px — hard near cursor, soft far
+      const alpha = 0.18 + 0.78 * t;          // opacity — near 1.0 right under cursor
 
       el.style.textShadow =
         `${(nx * off).toFixed(1)}px ${(ny * off).toFixed(1)}px ` +
