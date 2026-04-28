@@ -15,7 +15,7 @@ function initFilmGrain() {
     height:        '100%',
     pointerEvents: 'none',
     zIndex:        '9000',
-    opacity:       '0.11',
+    opacity:       '0.18',
     mixBlendMode:  'overlay',
   });
   document.body.appendChild(canvas);
@@ -72,7 +72,7 @@ function initPageTransitions() {
     if (!href || href.startsWith('#') || /^(https?:|mailto:|tel:)/.test(href)) return;
     e.preventDefault();
     overlay.classList.remove('faded');
-    setTimeout(() => { window.location.href = href; }, 400);
+    setTimeout(() => { window.location.href = href; }, 220);
   });
 }
 

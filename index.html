@@ -39,26 +39,26 @@
     <div class="container">
       <h1 class="intro-title" data-animate="1">Edward de Jong</h1>
       <p class="intro-sub" data-animate="2">
-        <span>+ Amsterdam</span>
-        <span>+ Narrative</span>
-        <span>+ Existential</span>
-        <span>+ Humanistic</span>
+        <span data-en="+ Amsterdam"   data-nl="+ Amsterdam">+ Amsterdam</span>
+        <span data-en="+ Narrative"   data-nl="+ Narratief">+ Narratief</span>
+        <span data-en="+ Existential" data-nl="+ Existentieel">+ Existentieel</span>
+        <span data-en="+ Humanistic"  data-nl="+ Humanistisch">+ Humanistisch</span>
       </p>
 
       <div data-animate="3">
         <!-- Language toggle -->
         <div class="lang-toggle" id="langToggle" role="group" aria-label="Language">
           <div class="lang-pill" id="langPill" aria-hidden="true"></div>
-          <button class="lang-btn active" data-lang="en">EN</button>
-          <button class="lang-btn"        data-lang="nl">NL</button>
+          <button class="lang-btn"        data-lang="en">EN</button>
+          <button class="lang-btn active" data-lang="nl">NL</button>
         </div>
 
         <!-- Bio — crossfades between languages -->
         <div class="bio-wrap">
-          <p class="bio-text" id="bio-en">
+          <p class="bio-text" id="bio-en" hidden>
             Edward de Jong (Amsterdam, 1994) is a writer and director whose films are grounded in everyday life and shaped by a passion for working with actors. His work is socially realistic with a comic edge — observational in style, unconventional in structure. He studied Fiction Directing at the Nederlandse Filmacademie and graduated in 2023.
           </p>
-          <p class="bio-text" id="bio-nl" hidden>
+          <p class="bio-text" id="bio-nl">
             De films van Edward de Jong (Amsterdam, 1994) tonen zijn toewijding aan het authentiek weergeven van het alledaagse leven, evenals zijn passie voor werken met acteurs. Zijn films zijn sociaal realistisch met een komische inslag, hebben een observerende stijl en een onconventionele verhaalstructuur. Hij studeerde Regie Fictie aan de Nederlandse Filmacademie en studeerde af in 2023.
           </p>
         </div>
@@ -92,7 +92,7 @@
       <p class="contact-email" id="contact-email">
         <a href="mailto:info@edwarddejong.nl">info@edwarddejong.nl</a>
       </p>
-      <p class="contact-phone" id="contact-phone"></p>
+
       <p class="contact-note" id="contact-note">Open to festival inquiries, script commissions, and commercial collaborations.</p>
     </div>
   </section>

@@ -156,6 +156,7 @@ section {
 
 #intro .container {
   text-align: center;
+  position: relative;
 }
 
 .intro-title {
@@ -168,6 +169,8 @@ section {
   white-space: nowrap;
   margin-bottom: 1.1rem;
   color: var(--text);
+  position: relative;
+  z-index: 2;
 }
 
 .intro-sub {
@@ -544,6 +547,13 @@ section {
 [data-animate="2"] { animation-delay: 0.18s; }
 [data-animate="3"] { animation-delay: 0.3s; }
 [data-animate="4"] { animation-delay: 0.42s; }
+
+/* Bio container sits above floating words */
+#intro [data-animate="3"] {
+  position: relative;
+  z-index: 5;
+  background: var(--bg);
+}
 
 /* Nav: current-page link */
 .nav-current {
@@ -954,7 +964,7 @@ section {
   z-index: 9999;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.22s ease;
 }
 
 .page-overlay.faded {

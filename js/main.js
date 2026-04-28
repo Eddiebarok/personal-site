@@ -161,7 +161,7 @@ function initLangToggle() {
   const bioNl = document.getElementById('bio-nl');
   if (!bioEn || !bioNl) return;
 
-  let currentLang = 'en';
+  let currentLang = 'nl';
 
   // Set initial pill size/position
   function setPill(btn) {
@@ -170,7 +170,7 @@ function initLangToggle() {
     // Offset relative to toggle container
     pill.style.transform = `translateX(${btn.offsetLeft - 3}px)`;
   }
-  setPill(btns[0]); // EN is default
+  setPill(btns[1]); // NL is default
 
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -199,6 +199,11 @@ function initLangToggle() {
             toEl.style.opacity = '';
           });
         });
+      });
+
+      // Update floating keyword text
+      $$('[data-nl]').forEach(s => {
+        if (s.dataset[lang]) s.textContent = s.dataset[lang];
       });
 
       currentLang = lang;
@@ -326,6 +331,71 @@ function initLetterRepel() {
   });
 }
 
+/* ── Floating keywords ───────────────────────────────────── */
+// Pulls keyword spans out of normal flow and drifts them
+// through the name using Lissajous-style sine wave paths.
+// Some float behind the name (z-index 1), some in front (z-index 3).
+// The bio container (z-index 5 + solid background) covers any strays.
+
+function initFloatingWords() {
+  const section = document.getElementById('intro');
+  if (!section) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const container = section.querySelector('.container');
+  const sub       = section.querySelector('.intro-sub');
+  if (!sub || !container) return;
+
+  const spans = Array.from(sub.querySelectorAll('span'));
+  if (!spans.length) return;
+
+  // Move spans to container so they can float across the full name area
+  spans.forEach(span => {
+    span.style.position     = 'absolute';
+    span.style.left         = '0';
+    span.style.top          = '0';
+    span.style.whiteSpace   = 'nowrap';
+    span.style.pointerEvents = 'none';
+    span.style.willChange   = 'transform';
+    span.style.opacity      = '0.48';
+    span.style.fontSize     = '0.78rem';
+    span.style.letterSpacing = '0.03em';
+    span.style.color        = 'var(--muted)';
+    container.appendChild(span);
+  });
+
+  // Collapse sub to maintain spacing without taking visual space
+  sub.style.height       = '0';
+  sub.style.marginBottom = '3.5rem';
+
+  // Per-word params: base position as fraction of container width / title height,
+  // sine wave amplitudes and frequencies, z-index relative to title (z-index 2)
+  const cfg = [
+    { bx: 0.06, byF: 0.28, Ax: 72, Ay: 58, wx: 0.00022, wy: 0.00017, px: 0.0, py: 1.1, zi: '3' },
+    { bx: 0.52, byF: 0.55, Ax: 58, Ay: 46, wx: 0.00031, wy: 0.00024, px: 2.1, py: 0.4, zi: '1' },
+    { bx: 0.28, byF: 0.14, Ax: 82, Ay: 60, wx: 0.00018, wy: 0.00029, px: 1.3, py: 2.3, zi: '3' },
+    { bx: 0.70, byF: 0.62, Ax: 62, Ay: 50, wx: 0.00027, wy: 0.00020, px: 3.5, py: 0.9, zi: '1' },
+  ];
+
+  spans.forEach((span, i) => { span.style.zIndex = cfg[i].zi; });
+
+  const title = container.querySelector('.intro-title');
+
+  (function tick(ts) {
+    const W      = container.clientWidth;
+    const titleH = title ? title.offsetHeight : 180;
+
+    spans.forEach((span, i) => {
+      const c = cfg[i];
+      const x = c.bx * W      + c.Ax * Math.sin(c.wx * ts + c.px);
+      const y = c.byF * titleH + c.Ay * Math.sin(c.wy * ts + c.py);
+      span.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    });
+
+    requestAnimationFrame(tick);
+  })(0);
+}
+
 /* ── Fit title to container width ───────────────────────── */
 // Sets the hero name's font-size so it spans exactly the container width.
 // Runs after fonts load and on every resize. Mobile: let CSS handle it.
@@ -442,6 +512,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCvTabs();
   initSmoothScroll();
   initLetterRepel();          // wraps letters in spans first
+  initFloatingWords();        // drifts keywords through the name area
   fitTitle();                  // then measures & fits
   document.fonts.ready.then(fitTitle);
   window.addEventListener('resize', fitTitle);
