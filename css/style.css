@@ -49,13 +49,13 @@ button { font-family: var(--font); }
 /* ── 2. Variables ─────────────────────────────────────── */
 
 :root {
-  --bg:        #fafaf8;
-  --text:      #111110;
-  --muted:     #93938c;
-  --subtle:    #c4c4bc;
-  --border:    #deded7;
-  --ph-bg:     #e4e4dc;
-  --ph-text:   #9a9a92;
+  --bg:        #0e0c0a;
+  --text:      #e8dece;
+  --muted:     rgba(232, 222, 206, 0.42);
+  --subtle:    rgba(232, 222, 206, 0.16);
+  --border:    rgba(232, 222, 206, 0.10);
+  --ph-bg:     #1d1b18;
+  --ph-text:   rgba(232, 222, 206, 0.28);
 
   --font: 'DM Sans', system-ui, -apple-system, sans-serif;
 
@@ -168,9 +168,17 @@ section {
   text-transform: uppercase;
   white-space: nowrap;
   margin-bottom: 1.1rem;
-  color: var(--text);
   position: relative;
   z-index: 2;
+
+  /* Roger Deakins — single warm key light from upper-left, deep shadow */
+  color: #f2dfa8;
+  text-shadow:
+    3px 5px 0px   rgba(3, 1, 0, 0.98),
+    5px 8px 8px   rgba(2, 1, 0, 0.88),
+    9px 13px 28px rgba(1, 0, 0, 0.72),
+    -2px -3px 18px rgba(220, 150, 40, 0.55),
+    -1px -1px  8px rgba(255, 210, 80, 0.28);
 }
 
 .intro-sub {
