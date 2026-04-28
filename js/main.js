@@ -24,30 +24,39 @@ function $$(selector, root) {
   return Array.from((root || document).querySelectorAll(selector));
 }
 
-/* ── Build project list ─────────────────────────────────── */
+/* ── Build film strip ───────────────────────────────────── */
 
-function buildProjectList() {
-  const list = document.getElementById('projectList');
-  if (!list) return;
+function buildFilmStrip() {
+  const strip = document.getElementById('filmStrip');
+  if (!strip) return;
 
-  PROJECTS.forEach(project => {
+  // Show only fiction films in a fixed order: released films, then Los last
+  const ORDER = ['niks-gebeurd', 'suni', 'per-persoon', 'los'];
+  const map   = Object.fromEntries(PROJECTS.map(p => [p.slug, p]));
+
+  ORDER.forEach(slug => {
+    const project = map[slug];
+    if (!project) return;
+
     const a = document.createElement('a');
-    a.className = 'project-row';
-    a.href = `work.html?p=${project.slug}`;
+    a.href = `work.html?p=${slug}`;
     a.setAttribute('role', 'listitem');
-    a.dataset.category = project.category;
-    a.dataset.slug = project.slug;
-    a.dataset.title = project.title;
 
-    a.innerHTML = `
-      <div class="project-left">
-        <div class="project-thumb" aria-hidden="true"></div>
-        <span class="project-title">${project.title}</span>
-      </div>
-      <span class="project-year">${project.year}</span>
-    `;
+    if (project.preProduction) {
+      a.className = 'film-item film-item--upcoming';
+      a.innerHTML = `
+        <span class="film-title">${project.title}</span>
+        <span class="film-meta">Short film&nbsp;· Pre-production</span>
+      `;
+    } else {
+      a.className = 'film-item';
+      a.innerHTML = `
+        <span class="film-title">${project.title}</span>
+        <span class="film-year">${project.year}</span>
+      `;
+    }
 
-    list.appendChild(a);
+    strip.appendChild(a);
   });
 }
 
@@ -620,23 +629,15 @@ async function applyProjectVisibility() {
 
 /* ── Init ───────────────────────────────────────────────── */
 
-document.addEventListener('DOMContentLoaded', async () => {
-  buildProjectList();
-  initFilter();
-  initStillPreview();
+document.addEventListener('DOMContentLoaded', () => {
+  buildFilmStrip();
   initLangToggle();
   initCvTabs();
   initSmoothScroll();
-  initLetterRepel();          // wraps letters in spans first
-  initFloatingWords();        // drifts keywords through the name area
+  initLetterRepel();
   fitTitle();
   applyDeakinsGradient();
   document.fonts.ready.then(() => { fitTitle(); applyDeakinsGradient(); });
   window.addEventListener('resize', () => { fitTitle(); applyDeakinsGradient(); });
-
-  // Load CMS content and apply visibility — run in parallel
-  await Promise.all([
-    loadHomepageContent(),
-    applyProjectVisibility()
-  ]);
+  loadHomepageContent();
 });

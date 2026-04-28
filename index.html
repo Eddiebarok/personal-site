@@ -71,17 +71,8 @@
     <div class="container">
       <p class="section-label" data-animate="1">Selected work</p>
 
-      <!-- Filter pills -->
-      <div class="filter-pills" id="filterPills" role="group" aria-label="Filter by category">
-        <button class="pill active" data-filter="all">All</button>
-        <button class="pill" data-filter="fiction">Fiction</button>
-        <button class="pill" data-filter="commercial">Commercial</button>
-        <button class="pill" data-filter="music-video">Music video</button>
-        <button class="pill" data-filter="other">Other</button>
-      </div>
-
-      <!-- Project rows rendered by main.js -->
-      <div class="project-list" id="projectList" role="list"></div>
+      <!-- Film titles rendered by main.js -->
+      <div class="film-strip" id="filmStrip" role="list"></div>
     </div>
   </section>
 
@@ -96,11 +87,6 @@
       <p class="contact-note" id="contact-note">Open to festival inquiries, script commissions, and commercial collaborations.</p>
     </div>
   </section>
-
-  <!-- Still preview — desktop hover reveal -->
-  <div class="still-preview" id="stillPreview" aria-hidden="true">
-    <div class="still-ph" id="stillLabel"></div>
-  </div>
 
   <script src="js/data.js"></script>
   <script src="js/main.js"></script>

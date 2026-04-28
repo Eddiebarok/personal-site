@@ -14,6 +14,25 @@
 
 const PROJECTS = [
   {
+    title: "Los",
+    year: null,
+    category: "fiction",
+    slug: "los",
+    preProduction: true,
+    logline: "[Logline — to be written.]",
+    synopsis: "[Synopsis — to be written.]",
+    production: "[Production company placeholder]",
+    duration: null,
+    festivals: [],
+    credits: [
+      { role: "Director", name: "Edward de Jong" },
+      { role: "Writer",   name: "Edward de Jong" }
+    ],
+    watchUrl: null,
+    watchPlatform: null,
+    stillCount: 0
+  },
+  {
     title: "De Sketches van Myrte Siebinga",
     year: 2024,
     category: "other",
