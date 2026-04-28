@@ -49,12 +49,12 @@ button { font-family: var(--font); }
 /* ── 2. Variables ─────────────────────────────────────── */
 
 :root {
-  --bg:        #0e0c0a;
+  --bg:        #3a3836;
   --text:      #e8dece;
   --muted:     rgba(232, 222, 206, 0.42);
   --subtle:    rgba(232, 222, 206, 0.16);
-  --border:    rgba(232, 222, 206, 0.10);
-  --ph-bg:     #1d1b18;
+  --border:    rgba(232, 222, 206, 0.12);
+  --ph-bg:     #494644;
   --ph-text:   rgba(232, 222, 206, 0.28);
 
   --font: 'DM Sans', system-ui, -apple-system, sans-serif;
@@ -1032,12 +1032,12 @@ section {
   }
 }
 
-/* ── 15. Effects (grain, cursor ring, page transitions) ─── */
+/* ── 15. Effects (grain, page transitions) ────────────────── */
 
 .page-overlay {
   position: fixed;
   inset: 0;
-  background: #111110;
+  background: #3a3836;
   z-index: 9999;
   pointer-events: none;
   opacity: 1;
@@ -1046,4 +1046,69 @@ section {
 
 .page-overlay.faded {
   opacity: 0;
+}
+
+/* ── 16. Film strip scrollbar ─────────────────────────────── */
+
+/* Hide native scrollbar while keeping scroll behaviour */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .film-scrollbar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 22px;
+    height: 100%;
+    z-index: 5000;
+    user-select: none;
+    /* Dark strip — slightly darker than --bg for contrast */
+    background-color: #2e2c2a;
+    /* Sprocket-hole marks: two vertical columns of small rectangles */
+    background-image:
+      repeating-linear-gradient(180deg,
+        transparent        0px,
+        transparent        4px,
+        rgba(245,235,218,0.22) 4px,
+        rgba(245,235,218,0.22) 10px,
+        transparent       10px,
+        transparent       14px
+      ),
+      repeating-linear-gradient(180deg,
+        transparent        0px,
+        transparent        4px,
+        rgba(245,235,218,0.22) 4px,
+        rgba(245,235,218,0.22) 10px,
+        transparent       10px,
+        transparent       14px
+      );
+    background-position: 2px 4px, 16px 4px;
+    background-size:     4px 14px, 4px 14px;
+    background-repeat:   repeat-y, repeat-y;
+  }
+
+  .film-scrollbar-thumb {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    min-height: 28px;
+    background: rgba(232,222,206,0.40);
+    border-radius: 1px;
+    cursor: grab;
+    transition: background 0.15s;
+  }
+
+  .film-scrollbar-thumb:hover {
+    background: rgba(232,222,206,0.62);
+  }
+
+  .film-scrollbar--dragging .film-scrollbar-thumb {
+    cursor: grabbing;
+    background: rgba(232,222,206,0.80);
+  }
 }

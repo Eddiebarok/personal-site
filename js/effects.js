@@ -76,8 +76,91 @@ function initPageTransitions() {
   });
 }
 
+/* ── Film strip scrollbar ─────────────────────────────────
+ *
+ * A draggable film-strip on the right edge of the viewport.
+ * Native scroll events (wheel, keyboard) still work normally;
+ * the thumb stays in sync and can also be pulled to scroll.
+ * Only active on pointer:fine (desktop) — touch devices keep
+ * their native scroll behaviour.
+ */
+function initFilmScrollbar() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+
+  const bar   = document.createElement('div');
+  bar.className = 'film-scrollbar';
+  bar.setAttribute('aria-hidden', 'true');
+
+  const thumb = document.createElement('div');
+  thumb.className = 'film-scrollbar-thumb';
+  bar.appendChild(thumb);
+  document.body.appendChild(bar);
+
+  /* ── sync thumb to current scroll position ── */
+  function updateThumb() {
+    const totalH     = document.documentElement.scrollHeight;
+    const viewH      = window.innerHeight;
+    const scrollable = Math.max(totalH - viewH, 1);
+    const ratio      = window.scrollY / scrollable;
+    const thumbH     = Math.max(28, Math.round(viewH * viewH / totalH));
+    const thumbTop   = Math.round(ratio * (viewH - thumbH));
+    thumb.style.height = thumbH + 'px';
+    thumb.style.top    = thumbTop + 'px';
+  }
+
+  window.addEventListener('scroll', updateThumb, { passive: true });
+  window.addEventListener('resize', updateThumb);
+  // Re-check after fonts + images settle
+  window.addEventListener('load', updateThumb);
+  updateThumb();
+
+  /* ── drag the thumb ── */
+  let dragging    = false;
+  let startY      = 0;
+  let startScroll = 0;
+
+  thumb.addEventListener('mousedown', e => {
+    dragging    = true;
+    startY      = e.clientY;
+    startScroll = window.scrollY;
+    bar.classList.add('film-scrollbar--dragging');
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const totalH     = document.documentElement.scrollHeight;
+    const viewH      = window.innerHeight;
+    const thumbH     = thumb.offsetHeight;
+    const trackH     = viewH;
+    const dy         = e.clientY - startY;
+    const scrollable = totalH - viewH;
+    const newScroll  = startScroll + dy * scrollable / Math.max(trackH - thumbH, 1);
+    window.scrollTo({ top: newScroll, behavior: 'instant' });
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    bar.classList.remove('film-scrollbar--dragging');
+  });
+
+  /* ── click on the track → jump to that position ── */
+  bar.addEventListener('click', e => {
+    if (e.target === thumb) return;
+    const totalH     = document.documentElement.scrollHeight;
+    const viewH      = window.innerHeight;
+    const thumbH     = thumb.offsetHeight;
+    const ratio      = Math.max(0, Math.min(1,
+      (e.clientY - thumbH / 2) / (viewH - thumbH)
+    ));
+    window.scrollTo({ top: ratio * (totalH - viewH), behavior: 'smooth' });
+  });
+}
+
 /* ── Init ─────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initFilmGrain();
   initPageTransitions();
+  initFilmScrollbar();
 });
