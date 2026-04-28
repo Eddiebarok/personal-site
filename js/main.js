@@ -27,36 +27,144 @@ function $$(selector, root) {
 /* ── Build film strip ───────────────────────────────────── */
 
 function buildFilmStrip() {
-  const strip = document.getElementById('filmStrip');
-  if (!strip) return;
+  const wrap = document.getElementById('workContainer');
+  if (!wrap) return;
 
-  // Show only fiction films in a fixed order: released films, then Los last
-  const ORDER = ['niks-gebeurd', 'suni', 'per-persoon', 'los'];
-  const map   = Object.fromEntries(PROJECTS.map(p => [p.slug, p]));
+  const map = Object.fromEntries(PROJECTS.map(p => [p.slug, p]));
 
-  ORDER.forEach(slug => {
-    const project = map[slug];
-    if (!project) return;
+  function makeSection(labelText, items) {
+    const sec = document.createElement('div');
+    sec.className = 'work-subsection';
 
-    const a = document.createElement('a');
-    a.href = `work.html?p=${slug}`;
-    a.setAttribute('role', 'listitem');
+    const lbl = document.createElement('p');
+    lbl.className = 'section-label';
+    lbl.setAttribute('data-animate', '1');
+    lbl.textContent = labelText;
+    sec.appendChild(lbl);
 
-    if (project.preProduction) {
-      a.className = 'film-item film-item--upcoming';
-      a.innerHTML = `
-        <span class="film-title">${project.title}</span>
-        <span class="film-meta">Short film&nbsp;· Pre-production</span>
-      `;
-    } else {
-      a.className = 'film-item';
-      a.innerHTML = `
-        <span class="film-title">${project.title}</span>
-        <span class="film-year">${project.year}</span>
-      `;
-    }
+    const strip = document.createElement('div');
+    strip.className = 'film-strip';
+    strip.setAttribute('role', 'list');
+    items.forEach(({ slug, upcoming }) => {
+      const p = map[slug];
+      if (!p) return;
+      const a = document.createElement('a');
+      a.href       = `work.html?p=${slug}`;
+      a.setAttribute('role', 'listitem');
+      if (upcoming) {
+        a.className  = 'film-item film-item--upcoming';
+        a.innerHTML  = `<span class="film-title">${p.title}</span>
+                        <span class="film-meta">Short film&nbsp;· Pre-production</span>`;
+      } else {
+        a.className  = 'film-item';
+        a.innerHTML  = `<span class="film-title">${p.title}</span>
+                        <span class="film-year">${p.year}</span>`;
+      }
+      strip.appendChild(a);
+    });
+    sec.appendChild(strip);
+    return sec;
+  }
 
-    strip.appendChild(a);
+  // Los first — "currently in development"
+  wrap.appendChild(makeSection('Currently in development', [
+    { slug: 'los', upcoming: true },
+  ]));
+
+  // Released fiction films
+  wrap.appendChild(makeSection('Narrative fiction', [
+    { slug: 'niks-gebeurd' },
+    { slug: 'suni' },
+    { slug: 'per-persoon' },
+  ]));
+}
+
+/* ── Rope animation on Los ──────────────────────────────── */
+// An SVG path draws two overlapping ellipses around the word "Los",
+// entering from the left. The second loop is slightly tighter —
+// constricting feel. Animated via stroke-dashoffset over 5 seconds.
+
+function initRopeAnimation() {
+  const item    = document.querySelector('.film-item--upcoming');
+  if (!item) return;
+  const titleEl = item.querySelector('.film-title');
+  if (!titleEl) return;
+
+  const W    = titleEl.offsetWidth;
+  const H    = titleEl.offsetHeight;
+  const PAD  = 12;   // rope clearance around the word
+  const LEAD = 30;   // entry line length before first loop
+
+  // In SVG space: title sits at x=[LEAD, LEAD+W], y=[PAD, PAD+H]
+  const cx  = LEAD + W / 2;
+  const cy  = PAD  + H / 2;
+  const rx1 = W / 2 + PAD;        // loop 1 (outer)
+  const ry1 = H / 2 + PAD + 3;
+  const rx2 = rx1 - 6;             // loop 2 (slightly tighter)
+  const ry2 = ry1 - 6;
+  const K   = 0.5523;              // cubic-bezier circle constant
+
+  // Returns 4-segment clockwise ellipse starting/ending at (cx-rx, cy)
+  function ellipse(rx, ry) {
+    const l = cx - rx, r = cx + rx, t = cy - ry, b = cy + ry;
+    return [
+      `C ${l},${cy - ry*K} ${cx - rx*K},${t} ${cx},${t}`,
+      `C ${cx + rx*K},${t} ${r},${cy - ry*K} ${r},${cy}`,
+      `C ${r},${cy + ry*K} ${cx + rx*K},${b} ${cx},${b}`,
+      `C ${cx - rx*K},${b} ${l},${cy + ry*K} ${l},${cy}`,
+    ].join(' ');
+  }
+
+  const d = [
+    `M 0,${cy}`,              // enter from off-screen left
+    `L ${cx - rx1},${cy}`,    // entry line to start of loop 1
+    ellipse(rx1, ry1),         // first wrap
+    `L ${cx - rx2},${cy}`,    // slight inward move (constricting)
+    ellipse(rx2, ry2),         // second wrap, tighter
+  ].join(' ');
+
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  Object.assign(svg.style, {
+    position: 'absolute',
+    left: `${-LEAD}px`,
+    top:  `${-PAD}px`,
+    width:  `${cx + rx1 + 10}px`,
+    height: `${cy + ry1 + 8}px`,
+    pointerEvents: 'none',
+    overflow: 'visible',
+    opacity: '0',
+    transition: 'opacity 0.25s',
+  });
+
+  const rope = document.createElementNS(ns, 'path');
+  rope.setAttribute('d', d);
+  rope.setAttribute('fill', 'none');
+  rope.setAttribute('stroke', 'rgba(196,154,72,0.90)');
+  rope.setAttribute('stroke-width', '2.5');
+  rope.setAttribute('stroke-linecap', 'round');
+  rope.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(rope);
+
+  // Insert behind the title text
+  item.insertBefore(svg, titleEl);
+  titleEl.style.position = 'relative';
+
+  const len = (() => { try { return rope.getTotalLength(); } catch { return 500; } })();
+  rope.setAttribute('stroke-dasharray', len);
+  rope.setAttribute('stroke-dashoffset', len);
+
+  item.addEventListener('mouseenter', () => {
+    svg.style.opacity  = '1';
+    rope.style.transition = 'stroke-dashoffset 5s linear';
+    rope.style.strokeDashoffset = '0';
+  });
+
+  item.addEventListener('mouseleave', () => {
+    rope.style.transition = 'stroke-dashoffset 0.5s ease';
+    rope.style.strokeDashoffset = len;
+    setTimeout(() => { svg.style.opacity = '0'; }, 500);
   });
 }
 
@@ -637,7 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initLetterRepel();
   fitTitle();
   applyDeakinsGradient();
-  document.fonts.ready.then(() => { fitTitle(); applyDeakinsGradient(); });
+  document.fonts.ready.then(() => {
+    fitTitle();
+    applyDeakinsGradient();
+    initRopeAnimation(); // needs real font metrics for path sizing
+  });
   window.addEventListener('resize', () => { fitTitle(); applyDeakinsGradient(); });
   loadHomepageContent();
 });
