@@ -179,14 +179,14 @@ section {
   position: relative;
   z-index: 2;
 
-  /* Roger Deakins — single warm key light from upper-left, deep shadow */
-  color: #f2dfa8;
+  /* Warm key light from upper-left; shadow side is dark gray, not black */
+  color: #4e3c30;
   text-shadow:
-    3px 5px 0px   rgba(3, 1, 0, 0.98),
-    5px 8px 8px   rgba(2, 1, 0, 0.88),
-    9px 13px 28px rgba(1, 0, 0, 0.72),
-    -2px -3px 18px rgba(220, 150, 40, 0.55),
-    -1px -1px  8px rgba(255, 210, 80, 0.28);
+    3px 5px 0px   rgba(8, 5, 2, 0.85),
+    5px 8px 12px  rgba(5, 3, 1, 0.70),
+    9px 14px 32px rgba(3, 2, 0, 0.55),
+    -2px -3px 20px rgba(220, 150, 40, 0.50),
+    -1px -1px  8px rgba(255, 210, 80, 0.22);
 }
 
 .intro-sub {

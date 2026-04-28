@@ -533,7 +533,7 @@ function applyDeakinsGradient() {
     const ly = ly0 - (r.top  - tRect.top);
     letter.style.background =
       `radial-gradient(ellipse 600px 420px at ${lx.toFixed(0)}px ${ly.toFixed(0)}px,` +
-      ' #fffbe0 0%, #fde060 8%, #d49010 23%, #824015 40%, #2e1204 58%, #0e0501 78%, #060200 100%)';
+      ' #fffce8 0%, #f8c840 8%, #b07830 22%, #7a5235 38%, #4e3c30 54%, #342e28 68%, #252018 82%, #1c1914 100%)';
     letter.style.webkitBackgroundClip = 'text';
     letter.style.backgroundClip       = 'text';
     letter.style.webkitTextFillColor  = 'transparent';
