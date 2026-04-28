@@ -15,8 +15,8 @@ function initFilmGrain() {
     height:        '100%',
     pointerEvents: 'none',
     zIndex:        '9000',
-    opacity:       '0.18',
-    mixBlendMode:  'overlay',
+    opacity:       '0.05',
+    mixBlendMode:  'screen',
   });
   document.body.appendChild(canvas);
 

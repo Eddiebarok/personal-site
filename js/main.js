@@ -355,95 +355,161 @@ function initFloatingWords() {
     span.style.whiteSpace    = 'nowrap';
     span.style.pointerEvents = 'none';
     span.style.willChange    = 'transform';
-    span.style.opacity       = '0.48';
     span.style.fontSize      = '0.78rem';
     span.style.letterSpacing = '0.03em';
-    span.style.color         = 'var(--muted)';
     container.appendChild(span);
   });
 
   sub.style.height       = '0';
   sub.style.marginBottom = '3.5rem';
 
-  // Two sine harmonics per word → non-repeating chaotic paths
-  // Amplitudes 3× original, frequencies 2× original
-  const cfg = [
-    { bx: 0.06, byF: 0.28,
-      Ax: 216, Ay: 174, wx: 0.00044, wy: 0.00034, px: 0.0, py: 1.1,
-      Ax2: 90,  Ay2: 60,  wx2: 0.00067, wy2: 0.00051, px2: 1.7, py2: 3.1, zi: '3' },
-    { bx: 0.52, byF: 0.55,
-      Ax: 174, Ay: 138, wx: 0.00062, wy: 0.00048, px: 2.1, py: 0.4,
-      Ax2: 110, Ay2: 80,  wx2: 0.00041, wy2: 0.00073, px2: 0.8, py2: 1.9, zi: '1' },
-    { bx: 0.28, byF: 0.14,
-      Ax: 246, Ay: 180, wx: 0.00036, wy: 0.00058, px: 1.3, py: 2.3,
-      Ax2: 75,  Ay2: 105, wx2: 0.00078, wy2: 0.00038, px2: 2.5, py2: 0.7, zi: '3' },
-    { bx: 0.70, byF: 0.62,
-      Ax: 186, Ay: 150, wx: 0.00054, wy: 0.00040, px: 3.5, py: 0.9,
-      Ax2: 100, Ay2: 65,  wx2: 0.00053, wy2: 0.00066, px2: 1.2, py2: 2.8, zi: '1' },
-  ];
+  const SPEED = 1.8; // px per 60fps frame — identical for every word
 
-  spans.forEach((span, i) => { span.style.zIndex = cfg[i].zi; });
+  // Each word gets a unique starting angle so they fan out immediately
+  const startAngles = [0.82, 2.47, 4.05, 5.60]; // radians, spread ~90° apart
+  const vel = startAngles.map(a => ({
+    vx: Math.cos(a) * SPEED,
+    vy: Math.sin(a) * SPEED,
+  }));
 
-  // Per-word collision perturbation state
-  const st  = spans.map(() => ({ dx: 0, dy: 0, vx: 0, vy: 0 }));
-  const pos = spans.map(() => ({ x: 0, y: 0 }));
+  // z-index: odd words behind title (zi=1), even words in front of title (zi=3)
+  const zi = ['3', '1', '3', '1'];
+  spans.forEach((span, i) => { span.style.zIndex = zi[i]; });
 
+  const pos  = spans.map(() => ({ x: 0, y: 0 }));
   const title = container.querySelector('.intro-title');
-  const bioEl = container.querySelector('[data-animate="3"]');
-  const COLL  = 90; // collision radius px
+  const LR    = 380;
+  const COLL  = 110; // collision radius px
+
+  let initialized = false;
+  let lastTs      = null;
 
   (function tick(ts) {
+    if (lastTs === null) { lastTs = ts; requestAnimationFrame(tick); return; }
+    const dt   = ts - lastTs;
+    lastTs = ts;
+    const step = Math.min(dt / 16.67, 3);
+
     const W      = container.clientWidth;
     const titleH = title ? title.offsetHeight : 180;
-    const maxY   = bioEl  ? bioEl.offsetTop - 10 : titleH * 1.5;
+    const lightX = 0.18 * W;
+    const lightY = titleH * -0.15;
 
-    // 1. Base two-harmonic Lissajous positions
+    // Lazy initialise positions once real dimensions are available
+    if (!initialized) {
+      const starts = [
+        { x: 0.12 * W, y:  0.15 * titleH },
+        { x: 0.62 * W, y:  0.55 * titleH },
+        { x: 0.32 * W, y: -0.20 * titleH },
+        { x: 0.78 * W, y:  0.80 * titleH },
+      ];
+      starts.forEach((s, i) => { pos[i].x = s.x; pos[i].y = s.y; });
+      initialized = true;
+    }
+
+    // Bounce bounds: wide horizontal, generous vertical so words reach
+    // below the bio (they appear behind sections via z-index)
+    const minX = -20;
+    const maxX = W + 20;
+    const minY = -titleH * 0.6;
+    const maxY =  titleH * 4.0;
+
+    // 1. Straight-line movement + wall bounce
     spans.forEach((_, i) => {
-      const c  = cfg[i];
-      pos[i].x = c.bx  * W
-        + c.Ax  * Math.sin(c.wx  * ts + c.px)
-        + c.Ax2 * Math.sin(c.wx2 * ts + c.px2);
-      pos[i].y = c.byF * titleH
-        + c.Ay  * Math.sin(c.wy  * ts + c.py)
-        + c.Ay2 * Math.sin(c.wy2 * ts + c.py2);
+      pos[i].x += vel[i].vx * step;
+      pos[i].y += vel[i].vy * step;
+
+      if (pos[i].x < minX) {
+        pos[i].x  = minX + (minX - pos[i].x);
+        vel[i].vx = Math.abs(vel[i].vx);
+      } else if (pos[i].x > maxX) {
+        pos[i].x  = maxX - (pos[i].x - maxX);
+        vel[i].vx = -Math.abs(vel[i].vx);
+      }
+
+      if (pos[i].y < minY) {
+        pos[i].y  = minY + (minY - pos[i].y);
+        vel[i].vy = Math.abs(vel[i].vy);
+      } else if (pos[i].y > maxY) {
+        pos[i].y  = maxY - (pos[i].y - maxY);
+        vel[i].vy = -Math.abs(vel[i].vy);
+      }
     });
 
-    // 2. Pairwise collision repulsion
+    // 2. Word-word elastic collision — equal mass, preserves speed
     for (let i = 0; i < spans.length - 1; i++) {
       for (let j = i + 1; j < spans.length; j++) {
         const ddx  = pos[j].x - pos[i].x;
         const ddy  = pos[j].y - pos[i].y;
         const dist = Math.hypot(ddx, ddy) || 1;
         if (dist < COLL) {
-          const f  = ((COLL - dist) / COLL) * 2.5;
-          const nx = ddx / dist, ny = ddy / dist;
-          st[i].vx -= nx * f;  st[i].vy -= ny * f;
-          st[j].vx += nx * f;  st[j].vy += ny * f;
+          const nx  = ddx / dist, ny = ddy / dist;
+          // Relative velocity projected onto collision normal
+          const dvn = (vel[i].vx - vel[j].vx) * nx + (vel[i].vy - vel[j].vy) * ny;
+          if (dvn > 0) { // only if approaching
+            // Swap velocity components along the normal (equal-mass elastic)
+            vel[i].vx -= dvn * nx;  vel[i].vy -= dvn * ny;
+            vel[j].vx += dvn * nx;  vel[j].vy += dvn * ny;
+            // Re-normalise to SPEED (guards fp drift)
+            const mi = Math.hypot(vel[i].vx, vel[i].vy) || 1;
+            const mj = Math.hypot(vel[j].vx, vel[j].vy) || 1;
+            vel[i].vx = vel[i].vx / mi * SPEED;  vel[i].vy = vel[i].vy / mi * SPEED;
+            vel[j].vx = vel[j].vx / mj * SPEED;  vel[j].vy = vel[j].vy / mj * SPEED;
+            // Push apart to prevent sticking
+            const sep = (COLL - dist) * 0.5 + 1;
+            pos[i].x -= nx * sep;  pos[i].y -= ny * sep;
+            pos[j].x += nx * sep;  pos[j].y += ny * sep;
+          }
         }
       }
     }
 
-    // 3. Integrate perturbation with damping (velocity → position → spring back)
-    st.forEach(s => {
-      s.vx *= 0.88;  s.vy *= 0.88;
-      s.dx += s.vx;  s.dy += s.vy;
-      s.dx *= 0.97;  s.dy *= 0.97;
-    });
-
-    // 4. Apply positions — hard clamp at bio line, small bounce
+    // 3. Apply positions + light-reactive colour
     spans.forEach((span, i) => {
-      const x = pos[i].x + st[i].dx;
-      let   y = pos[i].y + st[i].dy;
-      if (y > maxY) {
-        st[i].dy -= (y - maxY);
-        st[i].vy *= -0.4;
-        y = maxY;
-      }
+      const x = pos[i].x, y = pos[i].y;
       span.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+      const litT = Math.max(0, 1 - Math.hypot(x - lightX, y - lightY) / LR);
+      const r = Math.round(232 + litT * 23);
+      const g = Math.round(222 + litT * 10);
+      const b = Math.round(206 - litT * 56);
+      const a = (0.25 + litT * 0.60).toFixed(2);
+      span.style.color = `rgba(${r},${g},${b},${a})`;
     });
 
     requestAnimationFrame(tick);
   })(0);
+}
+
+/* ── Deakins per-letter gradient ────────────────────────── */
+// Applies a radial gradient to each .letter span so the light source
+// appears to come from a single point (upper-left) across the full name.
+
+function applyDeakinsGradient() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const title = document.querySelector('.intro-title');
+  if (!title) return;
+  const letters = title.querySelectorAll('.letter');
+  if (!letters.length) return;
+
+  const tRect = title.getBoundingClientRect();
+  const W = tRect.width, H = tRect.height;
+  // Light source: upper-left corner of the title block
+  const lx0 = 0.18 * W;
+  const ly0 = H * -0.15;
+
+  letters.forEach(letter => {
+    const r  = letter.getBoundingClientRect();
+    // Shift gradient origin so it's continuous across all letters
+    const lx = lx0 - (r.left - tRect.left);
+    const ly = ly0 - (r.top  - tRect.top);
+    letter.style.background =
+      `radial-gradient(ellipse 600px 420px at ${lx.toFixed(0)}px ${ly.toFixed(0)}px,` +
+      ' #fffbe0 0%, #fde060 8%, #d49010 23%, #824015 40%, #2e1204 58%, #0e0501 78%, #060200 100%)';
+    letter.style.webkitBackgroundClip = 'text';
+    letter.style.backgroundClip       = 'text';
+    letter.style.webkitTextFillColor  = 'transparent';
+    letter.style.color                 = '';
+  });
 }
 
 /* ── Fit title to container width ───────────────────────── */
@@ -563,9 +629,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSmoothScroll();
   initLetterRepel();          // wraps letters in spans first
   initFloatingWords();        // drifts keywords through the name area
-  fitTitle();                  // then measures & fits
-  document.fonts.ready.then(fitTitle);
-  window.addEventListener('resize', fitTitle);
+  fitTitle();
+  applyDeakinsGradient();
+  document.fonts.ready.then(() => { fitTitle(); applyDeakinsGradient(); });
+  window.addEventListener('resize', () => { fitTitle(); applyDeakinsGradient(); });
 
   // Load CMS content and apply visibility — run in parallel
   await Promise.all([
