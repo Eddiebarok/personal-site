@@ -332,10 +332,9 @@ function initLetterRepel() {
 }
 
 /* ── Floating keywords ───────────────────────────────────── */
-// Pulls keyword spans out of normal flow and drifts them
-// through the name using Lissajous-style sine wave paths.
-// Some float behind the name (z-index 1), some in front (z-index 3).
-// The bio container (z-index 5 + solid background) covers any strays.
+// Two-harmonic Lissajous paths, 2× speed, 3× range.
+// Collision detection: words repel each other on close approach.
+// Hard Y clamp keeps words above the bio line; can go off-screen elsewhere.
 
 function initFloatingWords() {
   const section = document.getElementById('intro');
@@ -349,46 +348,97 @@ function initFloatingWords() {
   const spans = Array.from(sub.querySelectorAll('span'));
   if (!spans.length) return;
 
-  // Move spans to container so they can float across the full name area
   spans.forEach(span => {
-    span.style.position     = 'absolute';
-    span.style.left         = '0';
-    span.style.top          = '0';
-    span.style.whiteSpace   = 'nowrap';
+    span.style.position      = 'absolute';
+    span.style.left          = '0';
+    span.style.top           = '0';
+    span.style.whiteSpace    = 'nowrap';
     span.style.pointerEvents = 'none';
-    span.style.willChange   = 'transform';
-    span.style.opacity      = '0.48';
-    span.style.fontSize     = '0.78rem';
+    span.style.willChange    = 'transform';
+    span.style.opacity       = '0.48';
+    span.style.fontSize      = '0.78rem';
     span.style.letterSpacing = '0.03em';
-    span.style.color        = 'var(--muted)';
+    span.style.color         = 'var(--muted)';
     container.appendChild(span);
   });
 
-  // Collapse sub to maintain spacing without taking visual space
   sub.style.height       = '0';
   sub.style.marginBottom = '3.5rem';
 
-  // Per-word params: base position as fraction of container width / title height,
-  // sine wave amplitudes and frequencies, z-index relative to title (z-index 2)
+  // Two sine harmonics per word → non-repeating chaotic paths
+  // Amplitudes 3× original, frequencies 2× original
   const cfg = [
-    { bx: 0.06, byF: 0.28, Ax: 72, Ay: 58, wx: 0.00022, wy: 0.00017, px: 0.0, py: 1.1, zi: '3' },
-    { bx: 0.52, byF: 0.55, Ax: 58, Ay: 46, wx: 0.00031, wy: 0.00024, px: 2.1, py: 0.4, zi: '1' },
-    { bx: 0.28, byF: 0.14, Ax: 82, Ay: 60, wx: 0.00018, wy: 0.00029, px: 1.3, py: 2.3, zi: '3' },
-    { bx: 0.70, byF: 0.62, Ax: 62, Ay: 50, wx: 0.00027, wy: 0.00020, px: 3.5, py: 0.9, zi: '1' },
+    { bx: 0.06, byF: 0.28,
+      Ax: 216, Ay: 174, wx: 0.00044, wy: 0.00034, px: 0.0, py: 1.1,
+      Ax2: 90,  Ay2: 60,  wx2: 0.00067, wy2: 0.00051, px2: 1.7, py2: 3.1, zi: '3' },
+    { bx: 0.52, byF: 0.55,
+      Ax: 174, Ay: 138, wx: 0.00062, wy: 0.00048, px: 2.1, py: 0.4,
+      Ax2: 110, Ay2: 80,  wx2: 0.00041, wy2: 0.00073, px2: 0.8, py2: 1.9, zi: '1' },
+    { bx: 0.28, byF: 0.14,
+      Ax: 246, Ay: 180, wx: 0.00036, wy: 0.00058, px: 1.3, py: 2.3,
+      Ax2: 75,  Ay2: 105, wx2: 0.00078, wy2: 0.00038, px2: 2.5, py2: 0.7, zi: '3' },
+    { bx: 0.70, byF: 0.62,
+      Ax: 186, Ay: 150, wx: 0.00054, wy: 0.00040, px: 3.5, py: 0.9,
+      Ax2: 100, Ay2: 65,  wx2: 0.00053, wy2: 0.00066, px2: 1.2, py2: 2.8, zi: '1' },
   ];
 
   spans.forEach((span, i) => { span.style.zIndex = cfg[i].zi; });
 
+  // Per-word collision perturbation state
+  const st  = spans.map(() => ({ dx: 0, dy: 0, vx: 0, vy: 0 }));
+  const pos = spans.map(() => ({ x: 0, y: 0 }));
+
   const title = container.querySelector('.intro-title');
+  const bioEl = container.querySelector('[data-animate="3"]');
+  const COLL  = 90; // collision radius px
 
   (function tick(ts) {
     const W      = container.clientWidth;
     const titleH = title ? title.offsetHeight : 180;
+    const maxY   = bioEl  ? bioEl.offsetTop - 10 : titleH * 1.5;
 
+    // 1. Base two-harmonic Lissajous positions
+    spans.forEach((_, i) => {
+      const c  = cfg[i];
+      pos[i].x = c.bx  * W
+        + c.Ax  * Math.sin(c.wx  * ts + c.px)
+        + c.Ax2 * Math.sin(c.wx2 * ts + c.px2);
+      pos[i].y = c.byF * titleH
+        + c.Ay  * Math.sin(c.wy  * ts + c.py)
+        + c.Ay2 * Math.sin(c.wy2 * ts + c.py2);
+    });
+
+    // 2. Pairwise collision repulsion
+    for (let i = 0; i < spans.length - 1; i++) {
+      for (let j = i + 1; j < spans.length; j++) {
+        const ddx  = pos[j].x - pos[i].x;
+        const ddy  = pos[j].y - pos[i].y;
+        const dist = Math.hypot(ddx, ddy) || 1;
+        if (dist < COLL) {
+          const f  = ((COLL - dist) / COLL) * 2.5;
+          const nx = ddx / dist, ny = ddy / dist;
+          st[i].vx -= nx * f;  st[i].vy -= ny * f;
+          st[j].vx += nx * f;  st[j].vy += ny * f;
+        }
+      }
+    }
+
+    // 3. Integrate perturbation with damping (velocity → position → spring back)
+    st.forEach(s => {
+      s.vx *= 0.88;  s.vy *= 0.88;
+      s.dx += s.vx;  s.dy += s.vy;
+      s.dx *= 0.97;  s.dy *= 0.97;
+    });
+
+    // 4. Apply positions — hard clamp at bio line, small bounce
     spans.forEach((span, i) => {
-      const c = cfg[i];
-      const x = c.bx * W      + c.Ax * Math.sin(c.wx * ts + c.px);
-      const y = c.byF * titleH + c.Ay * Math.sin(c.wy * ts + c.py);
+      const x = pos[i].x + st[i].dx;
+      let   y = pos[i].y + st[i].dy;
+      if (y > maxY) {
+        st[i].dy -= (y - maxY);
+        st[i].vy *= -0.4;
+        y = maxY;
+      }
       span.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
     });
 
